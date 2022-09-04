@@ -1,0 +1,16 @@
+﻿* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+#root {
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+}
+
+body {
+    background-color: rgb(246,246,246);
+    font-family: sans-serif;
+}

@@ -1,0 +1,56 @@
+﻿//ActorItem
+.actor {
+    padding: 15px;
+    margin: 15px 0;
+    justify-content: space-between;
+    align-items: end;
+    border-radius: 8px;
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.1);
+    background-color: white;
+
+    .actor__content {
+        width: 35vw;
+        min-height: 30px;
+        max-height: 400px;
+        word-wrap: break-word;
+        margin-bottom: 5px;
+    }
+
+    &:hover {
+        box-shadow: 0 0 0 1px rgba(0,128,128,1);
+    }
+
+    .btn {
+        text-align: right;
+
+        Button {
+            color: red;
+            border: 1px solid red;
+
+            &:hover {
+                background-color: rgba(255, 0, 0, 0.1);
+            }
+        }
+    }
+}
+
+//ActorList
+.content { 
+    h1 {
+        text-align: center;
+    }
+}
+
+//ActorForm
+.form {
+    .btn {
+        display: inline;
+        opacity: 0.2;
+        pointer-events: none;
+    }
+    
+    .btnActive {
+        display: inline;
+        opacity: 1;
+    }
+}

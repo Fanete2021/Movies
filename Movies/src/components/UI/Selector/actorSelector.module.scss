@@ -1,0 +1,30 @@
+﻿.selector {
+    margin-bottom: 15px;
+}
+
+.content__actor {
+    cursor: pointer;
+}
+
+.selector__title {
+    font-size: 20px;
+    margin-bottom: 5px;
+}
+
+.selector__title.active {
+    color: teal;
+}
+
+.selector__inp {
+    width: 100%;
+    text-align: center;
+    font-size: 16px;
+}
+
+.selector__selectedActors {
+    margin-bottom: 10px;
+}
+
+.content__actor:hover {
+    color: teal;
+}

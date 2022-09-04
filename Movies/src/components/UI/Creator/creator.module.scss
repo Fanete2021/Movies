@@ -1,0 +1,19 @@
+﻿.creator {
+    z-index: 1;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    background: rgba(0,0,0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.creator__content {
+    padding: 25px;
+    background: white;
+    border-radius: 16px;
+    width: 50vw;
+}

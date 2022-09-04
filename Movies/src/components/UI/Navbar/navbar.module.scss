@@ -1,0 +1,29 @@
+a {
+    color: rgb(57, 57, 57);
+    text-decoration: none !important;
+    border: none !important;
+
+    &:last-child {
+        position: absolute;
+        right: 15px;
+        cursor: pointer;
+    }
+}
+
+.navbar {
+    height: 35px;
+    width: 100vw;
+    display: flex;
+    align-items: center;
+    padding: 0 15px;
+    background: teal;
+}
+
+.navbar__link, .navbar__activeLink {
+    margin-right: 30px;
+}
+
+.navbar__activeLink {
+    color: black;
+    font-weight: 700;
+}

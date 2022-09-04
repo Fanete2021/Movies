@@ -1,0 +1,76 @@
+﻿//MovieItem
+.movie {
+    padding: 15px;
+    margin: 15px 0;
+    justify-content: space-between;
+    align-items: end;
+    border-radius: 8px;
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.1);
+    background-color: white;
+
+    &:hover {
+        box-shadow: 0 0 0 1px rgba(0,128,128,1);
+    }
+
+    .movie__title {
+        align-content: center;
+        font-weight: 900;
+        font-size: 24px;
+    }
+
+    .movie__premiere {
+        font-size: 12px;
+        color: gray;
+    }
+
+    .movie__description {
+        min-height: 10px;
+        word-wrap: break-word;
+        margin: 6px 0;
+    }
+
+    .movie__genres {
+        font-weight: 300;
+        text-transform: lowercase;
+        font-size: 14px;
+        margin-top: -3px;
+
+        :not(:first-child) {
+            padding-left: 5px;
+        }
+    }
+
+    .btn {
+        text-align: right;
+
+        Button {
+            color: red;
+            border: 1px solid red;
+
+            &:hover {
+                background-color: rgba(255, 0, 0, 0.1);
+            }
+        }
+    }
+}
+
+//MovieList
+.content { 
+    h1 {
+        text-align: center;
+    }
+}
+
+//MovieForm
+.form {
+    .btn {
+        display: inline;
+        opacity: 0.2;
+        pointer-events: none;
+    }
+    
+    .btnActive {
+        display: inline;
+        opacity: 1;
+    }
+}

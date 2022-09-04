@@ -1,0 +1,103 @@
+﻿$arrowSideBlack: '../../../img/arrowSide-Black.png';
+$arrowSideTeal: '../../../img/arrowSide-Teal.png';
+$dArrowSideBlack: '../../../img/dArrowSide-Black.png';
+$dArrowSideTeal: '../../../img/dArrowSide-Teal.png';
+
+.navigation {
+    display: flex;
+    font-size: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.1);
+    height: 40px;
+    margin-bottom: 20px;
+}
+
+.navigation__pages {
+    display: flex;
+    flex-basis: 60%;
+    justify-content: center;
+}
+
+//When the page is a border, the arrows are inactive
+.navigation__disDPrev, .navigation__disPrev, .navigation__disNext, .navigation__disDNext {
+    pointer-events: none;
+}
+
+.navigation__dPrev, .navigation__disDPrev {
+    flex-basis: 10%;
+    background: url($dArrowSideBlack) center center no-repeat;
+    border-radius: 8px;
+}
+
+.navigation__dPrev {
+    cursor: pointer;
+
+    &:hover {
+        background: url($dArrowSideTeal) center center no-repeat;
+        background-color: rgba(0, 128, 128, 0.1);
+    }
+}
+
+.navigation__prev, .navigation__disPrev {
+    flex-basis: 10%;
+    background: url($arrowSideBlack) center center no-repeat;
+}
+
+.navigation__prev {
+    cursor: pointer;
+
+    &:hover {
+        background: url($arrowSideTeal) center center no-repeat;
+        background-color: rgba(0, 128, 128, 0.1);
+    }
+}
+
+.navigation__dNext, .navigation__disDNext {
+    flex-basis: 10%;
+    background: url($dArrowSideBlack) center center no-repeat;
+    border-radius: 8px;
+    transform: rotate(180deg);
+}
+
+.navigation__dNext {
+    cursor: pointer;
+
+    &:hover {
+        background: url($dArrowSideTeal) center center no-repeat;
+        background-color: rgba(0, 128, 128, 0.1);
+    }
+}
+
+
+.navigation__next, .navigation__disNext {
+    flex-basis: 10%;
+    background: url($arrowSideBlack) center center no-repeat;
+    transform: rotate(180deg);
+}
+
+.navigation__next {
+    cursor: pointer;
+    
+    &:hover {
+        background: url($arrowSideTeal) center center no-repeat;
+        background-color: rgba(0, 128, 128, 0.1);
+    }
+}
+
+.navigation__numberPage {
+    text-align: center;
+    font-size: 20px;
+    padding-top: 10px;
+    width: 10%;
+    cursor: pointer;
+
+    &:hover {
+        color: teal;
+        background-color: rgba(0, 128, 128, 0.1);
+    }
+}
+
+.navigation__currentPage {
+    border-bottom: 2px solid teal;
+}

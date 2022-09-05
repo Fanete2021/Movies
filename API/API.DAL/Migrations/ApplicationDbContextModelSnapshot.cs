@@ -121,30 +121,30 @@ namespace API.DAL.Migrations
 
             modelBuilder.Entity("API.Domain.Entity.MovieActor", b =>
                 {
-                    b.Property<int>("MovieId")
+                    b.Property<int>("IdMovie")
                         .HasColumnType("int");
 
-                    b.Property<int>("ActorId")
+                    b.Property<int>("IdActor")
                         .HasColumnType("int");
 
-                    b.HasKey("MovieId", "ActorId");
+                    b.HasKey("IdMovie", "IdActor");
 
-                    b.HasIndex("ActorId");
+                    b.HasIndex("IdActor");
 
                     b.ToTable("MovieActor");
                 });
 
             modelBuilder.Entity("API.Domain.Entity.MovieGenre", b =>
                 {
-                    b.Property<int>("MovieId")
+                    b.Property<int>("idMovie")
                         .HasColumnType("int");
 
-                    b.Property<int>("GenreId")
+                    b.Property<int>("IdGenre")
                         .HasColumnType("int");
 
-                    b.HasKey("MovieId", "GenreId");
+                    b.HasKey("idMovie", "IdGenre");
 
-                    b.HasIndex("GenreId");
+                    b.HasIndex("IdGenre");
 
                     b.ToTable("MovieGenre");
                 });
@@ -153,13 +153,13 @@ namespace API.DAL.Migrations
                 {
                     b.HasOne("API.Domain.Entity.Actor", "Actor")
                         .WithMany("MovieActor")
-                        .HasForeignKey("ActorId")
+                        .HasForeignKey("IdActor")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("API.Domain.Entity.Movie", "Movie")
                         .WithMany("MovieActor")
-                        .HasForeignKey("MovieId")
+                        .HasForeignKey("IdMovie")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -168,13 +168,13 @@ namespace API.DAL.Migrations
                 {
                     b.HasOne("API.Domain.Entity.Genre", "Genre")
                         .WithMany("MovieGenre")
-                        .HasForeignKey("GenreId")
+                        .HasForeignKey("IdGenre")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("API.Domain.Entity.Movie", "Movie")
                         .WithMany("MovieGenre")
-                        .HasForeignKey("MovieId")
+                        .HasForeignKey("idMovie")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

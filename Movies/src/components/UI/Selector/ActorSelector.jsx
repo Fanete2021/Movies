@@ -1,5 +1,5 @@
 ﻿import React, { useEffect, useMemo, useState } from 'react';
-import ActorService from '../../../API/ActorService';
+import Service from '../../../API/Service';
 import useDebounce from '../../../hooks/useDebounce';
 import ActorsSearches from '../Searches/ActorsSearches';
 import cl from './actorSelector.module.scss';
@@ -7,29 +7,41 @@ import cl from './actorSelector.module.scss';
 const ActorSelector = function ({ addActor, deleteActor, selectedActors }) {
     const [visible, setVisible] = useState(false)
     const [searchedActors, setSearchedActors] = useState([])
-    const [substr, setSubstr] = useState('')
-    const debouncedSubstr = useDebounce(substr, 400);
+    const [name, setName] = useState('')
+    const debouncedSubstr = useDebounce(name, 400);
     const titleClasses = [cl.selector__title]
 
     if (selectedActors.length) {
         titleClasses.push(cl.active);
     }
 
-    const updateSearchedActors = async (value) => {
-        const response = await ActorService.getActors(value, selectedActors.map(a => a.id))
+    const updateSearchedActors = async (name) => {
+        let params = {
+            limit: 10,
+            page: 1,
+            idBanned: selectedActors.map(a => a.id),
+            name: name
+        };
+        let APIService = "actors";
+
+        const response = await Service.getEntities(APIService, params);
+
         setSearchedActors(response.data)
     }
 
     const changeSubstr = async (e) => {
         const value = e.target.value
-        setSubstr(value)
+        setName(value)
     }
 
     useEffect(() => {
-        updateSearchedActors(substr)
+        updateSearchedActors(name)
     }, [debouncedSubstr])
 
-    const filtredActors = useMemo(() => searchedActors.filter(a => selectedActors.findIndex(actor => a.id === actor.id) < 0, [selectedActors]))
+    const filtredActors = useMemo(() => 
+        searchedActors.filter(a => selectedActors.findIndex(actor => a.id === actor.id) < 0,
+        [selectedActors])
+        );
     
     return (
         <div className={cl.selector}>

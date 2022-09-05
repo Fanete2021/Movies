@@ -52,21 +52,21 @@ namespace API.DAL.Migrations
                 name: "MovieActor",
                 columns: table => new
                 {
-                    MovieId = table.Column<int>(nullable: false),
-                    ActorId = table.Column<int>(nullable: false)
+                    IdMovie = table.Column<int>(nullable: false),
+                    IdActor = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_MovieActor", x => new { x.MovieId, x.ActorId });
+                    table.PrimaryKey("PK_MovieActor", x => new { x.IdMovie, x.IdActor });
                     table.ForeignKey(
-                        name: "FK_MovieActor_Actors_ActorId",
-                        column: x => x.ActorId,
+                        name: "FK_MovieActor_Actors_IdActor",
+                        column: x => x.IdActor,
                         principalTable: "Actors",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_MovieActor_Movies_MovieId",
-                        column: x => x.MovieId,
+                        name: "FK_MovieActor_Movies_IdMovie",
+                        column: x => x.IdMovie,
                         principalTable: "Movies",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -76,21 +76,21 @@ namespace API.DAL.Migrations
                 name: "MovieGenre",
                 columns: table => new
                 {
-                    MovieId = table.Column<int>(nullable: false),
-                    GenreId = table.Column<int>(nullable: false)
+                    idMovie = table.Column<int>(nullable: false),
+                    IdGenre = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_MovieGenre", x => new { x.MovieId, x.GenreId });
+                    table.PrimaryKey("PK_MovieGenre", x => new { x.idMovie, x.IdGenre });
                     table.ForeignKey(
-                        name: "FK_MovieGenre_Genres_GenreId",
-                        column: x => x.GenreId,
+                        name: "FK_MovieGenre_Genres_IdGenre",
+                        column: x => x.IdGenre,
                         principalTable: "Genres",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_MovieGenre_Movies_MovieId",
-                        column: x => x.MovieId,
+                        name: "FK_MovieGenre_Movies_idMovie",
+                        column: x => x.idMovie,
                         principalTable: "Movies",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -113,14 +113,14 @@ namespace API.DAL.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_MovieActor_ActorId",
+                name: "IX_MovieActor_IdActor",
                 table: "MovieActor",
-                column: "ActorId");
+                column: "IdActor");
 
             migrationBuilder.CreateIndex(
-                name: "IX_MovieGenre_GenreId",
+                name: "IX_MovieGenre_IdGenre",
                 table: "MovieGenre",
-                column: "GenreId");
+                column: "IdGenre");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

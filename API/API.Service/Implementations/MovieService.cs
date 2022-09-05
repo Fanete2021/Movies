@@ -143,8 +143,8 @@ namespace API.Service.Implementations
             {
                 var movie = new MovieGenre
                 {
-                    MovieId = model.MovieId,
-                    GenreId = model.GenreId
+                    IdMovie = model.IdMovie,
+                    IdGenre = model.IdGenre
                 };
 
                 await movieRepository.AddGenreAsync(movie);
@@ -171,8 +171,8 @@ namespace API.Service.Implementations
             {
                 var movie = new MovieActor
                 {
-                    MovieId = model.MovieId,
-                    ActorId = model.ActorId
+                    IdMovie = model.IdMovie,
+                    IdActor = model.IdActor
                 };
 
                 await movieRepository.AddActorAsync(movie);

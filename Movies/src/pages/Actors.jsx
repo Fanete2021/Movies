@@ -1,7 +1,5 @@
 ﻿import React, { useEffect, useState } from 'react';
-import ActorService from '../API/ActorService';
 import ActorForm from '../components/UI/Actor/ActorForm';
-import ActorList from '../components/UI/Actor/ActorList';
 import Button from '../components/UI/Button/Button';
 import Creator from '../components/UI/Creator/Creator';
 import Loader from '../components/UI/Loader/Loader';
@@ -9,6 +7,9 @@ import PageNavigation from '../components/UI/PageNavigation/PageNavigation';
 import { useFetching } from '../hooks/useFetching';
 import { getPageCount } from '../utils/pages';
 import '../styles/pages.scss';
+import Service from '../API/Service';
+import ActorItem from '../components/UI/Actor/ActorItem';
+import List from '../components/UI/List/List';
 
 function Actors() {
     const [visibleCreature, setVisibleCreature] = useState(false);
@@ -17,9 +18,16 @@ function Actors() {
     const [limitActors, setLimitActors] = useState(10);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalCountActors, setTotalCountActors] = useState(0);
+    const APIService = 'actors';
 
     const [fetchActors, isActorsLoading] = useFetching(async (limit, page) => {
-        const response = await ActorService.getActors('', [], limit, page);
+
+        let params = {
+            limit: limit,
+            page: page
+        };
+
+        const response = await Service.getEntities(APIService, params);
 
         setTotalCountActors(response.headers['x-total-count']);        
         setTotalPages(getPageCount(response.headers['x-total-count'], limitActors))
@@ -37,10 +45,10 @@ function Actors() {
     }, [currentPage])
 
     const createActor = async (newActor) => {
-        await ActorService.addActor(newActor)
+        await Service.addEntity(newActor, APIService)
 
         newActor = {
-            ...newActor, id: await ActorService.getLast()
+            ...newActor, id: await Service.getLast(APIService)
         }
 
         setVisibleCreature(false);
@@ -55,7 +63,7 @@ function Actors() {
     }
 
     const removeActor = async (actor) => {
-        await ActorService.deleteActor(actor.id)
+        await Service.deleteEntity(actor.id, APIService)
         let offset = 0
         
         if (currentPage !== 1 && actors.length === 1) {
@@ -82,6 +90,10 @@ function Actors() {
         }
     }
 
+    const getActorItem = (actor, id) => {
+        return <ActorItem remove={removeActor} actor={actor} key={id} />
+    }
+
     return (
         <div className="infoBlock">
             <Button onClick={() => setVisibleCreature(true)}>
@@ -96,15 +108,14 @@ function Actors() {
 
             <hr/>
 
-            {isActorsLoading &&
+            {isActorsLoading 
+                ?
                 <div className="loader"><Loader /></div>
-            }
-
-            {!isActorsLoading &&
+                :
                 <div>
-                    <ActorList countActors={totalCountActors} isActorsLoading={isActorsLoading} remove={removeActor} actors={actors} title="Actors" />
+                    <List countEntities={totalCountActors} isEntitiesLoading={isActorsLoading} entities={actors} title="List of Actors" getItem={getActorItem} />
                     {totalCountActors > 0 &&
-                    <PageNavigation totalPages={totalPages} isLoading={isActorsLoading} currentPage={currentPage} changePage={changePage} />
+                        <PageNavigation totalPages={totalPages} isLoading={isActorsLoading} currentPage={currentPage} changePage={changePage} />
                     }
                 </div>
             }
@@ -114,4 +125,3 @@ function Actors() {
 
 
 export default Actors;
-

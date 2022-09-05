@@ -29,6 +29,10 @@ const MovieFilter = function ({ filter, setFilter }) {
     return (
         <div className={cl.search}>
             <div className={cl.parameters}>
+                <div className={cl.title}>
+                    <strong>Filter</strong>
+                </div>
+
                 <Input
                     value={filter.title}
                     onChange={e => setFilter({ ...filter, title: e.target.value })}

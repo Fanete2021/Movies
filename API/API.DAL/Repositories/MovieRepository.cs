@@ -140,14 +140,14 @@ namespace API.DAL.Repositories
 
         public async Task<List<Actor>> GetActorsAsync(int id)
         {
-            var movieAndActors = await db.MovieActor.Where(x => x.MovieId == id).Select(x => x.ActorId).ToListAsync();
+            var movieAndActors = await db.MovieActor.Where(x => x.IdMovie == id).Select(x => x.IdActor).ToListAsync();
             var actors = await actorRepository.SelectAsync();
             return actors.Where(x => movieAndActors.Contains(x.Id)).ToList();
         }
 
         public async Task<List<Genre>> GetGenresAsync(int id)
         {
-            var movieAndGenres = await db.MovieGenre.Where(x => x.MovieId == id).Select(x => x.GenreId).ToListAsync();
+            var movieAndGenres = await db.MovieGenre.Where(x => x.IdMovie == id).Select(x => x.IdGenre).ToListAsync();
             var genres = await genreRepository.SelectAsync();
             return genres.Where(x => movieAndGenres.Contains(x.Id)).ToList();
         }

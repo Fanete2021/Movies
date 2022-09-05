@@ -10,15 +10,15 @@ namespace API.Domain.Entity.Configuration
     {
         public void Configure(EntityTypeBuilder<MovieActor> builder)
         {
-            builder.HasKey(m => new { m.MovieId, m.ActorId });
+            builder.HasKey(m => new { m.IdMovie, m.IdActor });
 
             builder.HasOne(ma => ma.Movie)
                 .WithMany(m => m.MovieActor)
-                .HasForeignKey(ma => ma.MovieId);
+                .HasForeignKey(ma => ma.IdMovie);
 
             builder.HasOne(am => am.Actor)
                 .WithMany(a => a.MovieActor)
-                .HasForeignKey(am => am.ActorId);
+                .HasForeignKey(am => am.IdActor);
         }
     }
 }

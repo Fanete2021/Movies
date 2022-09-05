@@ -37,11 +37,11 @@ namespace API.DAL.Repositories
             return await db.Actors.FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public async Task<List<Actor>> GetAsync(string substr, int limit, int page, int[] bannedId)
+        public async Task<List<Actor>> GetAsync(string name, int limit, int page, int[] idBanned)
         {
             return await db.Actors.
-                Where(actor => bannedId.Contains(actor.Id) == false && (actor.Name + ' ' + actor.Surname).ToLower()
-                .Contains(substr.ToLower()))
+                Where(actor => idBanned.Contains(actor.Id) == false && (actor.Name + ' ' + actor.Surname).ToLower()
+                .Contains(name.ToLower()))
                 .Skip(limit * (page - 1))
                 .Take(limit)
                 .ToListAsync();

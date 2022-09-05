@@ -19,14 +19,14 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<Actor>> GetActors(string substr, [FromQuery] int[] bannedId, int limit = 5, int page = 1)
+        public async Task<ActionResult<Actor>> GetActors(string name, [FromQuery] int[] idBanned, int limit = 5, int page = 1)
         {
-            if (substr == null)
-                substr = "";
+            if (name == null)
+                name = "";
 
             var count = await _actorsService.GetCountActorsAsync();
             
-            var response = await _actorsService.GetActorAsync(substr, limit, page, bannedId);
+            var response = await _actorsService.GetActorAsync(name, limit, page, idBanned);
 
             if (response.StatusCode == Domain.Enum.StatusCode.OK)
             {

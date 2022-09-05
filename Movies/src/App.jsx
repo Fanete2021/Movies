@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter } from "react-router-dom";
-import GenreService from './API/GenreService';
+import Service from './API/Service';
 import AppRouter from './components/AppRouter';
 import Navbar from './components/UI/Navbar/Navbar';
 import { Context } from './context';
@@ -14,8 +14,10 @@ function App() {
     const [isLoading, setLoading] = useState(true);
 
     const loadingGenres = async () => {
-        const response = await GenreService.getGenres();
-        setGenres([...genres, ...response]);
+        let APIService = "genres";
+        const response = await Service.getEntities(APIService);
+
+        setGenres([...genres, ...response.data]);
     }
 
     useEffect(() => {

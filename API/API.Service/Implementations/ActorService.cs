@@ -79,13 +79,13 @@ namespace API.Service.Implementations
             }
         }
 
-        public async Task<BaseResponce<IEnumerable<Actor>>> GetActorAsync(string substr, int limit, int page, int[] bannedId)
+        public async Task<BaseResponce<IEnumerable<Actor>>> GetActorAsync(string name, int limit, int page, int[] idBanned)
         {
             var baseResponse = new BaseResponce<IEnumerable<Actor>>();
 
             try
             {
-                var actors = await actorRepository.GetAsync(substr, limit, page, bannedId);
+                var actors = await actorRepository.GetAsync(name, limit, page, idBanned);
 
                 if (actors.Count == 0)
                 {

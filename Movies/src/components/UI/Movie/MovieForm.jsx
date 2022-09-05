@@ -68,7 +68,7 @@ const MovieForm = function ({ create }) {
             />
             <Input
                 value={movie.premiereYear}
-                onChange={e => setMovie({ ...movie, premiereYear: e.target.value })}
+                onChange={e => setMovie({ ...movie, premiereYear: Number(e.target.value) })}
                 type="number"
                 placeholder="Premiere Year"
             />

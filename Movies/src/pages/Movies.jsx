@@ -9,10 +9,12 @@ import { contains } from '../utils/contains';
 import useDebounce from '../hooks/useDebounce';
 import PageNavigation from '../components/UI/PageNavigation/PageNavigation';
 import Creator from '../components/UI/Creator/Creator';
-import '../styles/pages.scss';
+import '../styles/infoPages.scss';
 import Service from '../API/Service';
 import MovieItem from '../components/UI/Movie/MovieItem';
 import List from '../components/UI/List/List';
+import { useContext } from 'react';
+import { Context } from '../context';
 
 
 function Movies() {
@@ -25,6 +27,7 @@ function Movies() {
     const [visibleCreature, setVisibleCreature] = useState(false);
     const [totalCountMovies, setTotalCountMovies] = useState(0);
     const APIService = 'movies';
+    const {isAuth} = useContext(Context);
 
     const [fetchMovies, isMovieLoading] = useFetching(async (limit, page) => {
         //Recording [limit] movies and getting their actors, genres
@@ -120,16 +123,18 @@ function Movies() {
     }
 
     const getMovieItem = (movie, id) => {
-        return <MovieItem remove={removeMovie} movie={movie} key={id} />
+        return <MovieItem remove={removeMovie} movie={movie} key={id} isAuth={isAuth} />
     }
 
     return (
         <div className="infoBlock">
             <MovieFilter filter={filter} setFilter={setFilter} />
 
-            <Button onClick={() => setVisibleCreature(true)}>
-                Add
-            </Button>
+            {isAuth &&
+                <Button onClick={() => setVisibleCreature(true)}>
+                    Add
+                </Button>
+            }
 
             {visibleCreature &&
                 <Creator setVisible={setVisibleCreature}>

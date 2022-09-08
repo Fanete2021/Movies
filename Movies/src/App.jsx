@@ -9,7 +9,6 @@ import './styles/app.scss';
 function App() {
     //Initialization of actors and genres data
     const [genres, setGenres] = useState([])
-    const [numberActiveLink, setNumberActiveLink] = useState(0);
     const [isAuth, setIsAuth] = useState(false);
     const [isLoading, setLoading] = useState(true);
 
@@ -29,17 +28,13 @@ function App() {
 
         setLoading(false);
     }, [])
-
-    const changeActiveLink = (number) => {
-        setNumberActiveLink(number);
-    }
     
     return (
         <Context.Provider value={{
             genres, isAuth, setIsAuth, isLoading
         }}>
             <BrowserRouter>
-                <Navbar numberActiveLink={numberActiveLink} changeActiveLink={changeActiveLink}/>
+                <Navbar/>
                 <AppRouter/>
             </BrowserRouter>
         </Context.Provider>

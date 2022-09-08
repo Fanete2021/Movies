@@ -1,11 +1,10 @@
 ﻿import React from 'react';
 import { useContext } from 'react';
-import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Context } from '../../../context';
 import cl from './navbar.module.scss';
 
-const Navbar = function ({numberActiveLink, changeActiveLink}) {
+const Navbar = function () {
     
     const links = [
         {
@@ -20,45 +19,30 @@ const Navbar = function ({numberActiveLink, changeActiveLink}) {
 
     const {isAuth, setIsAuth} = useContext(Context);
 
-    useEffect(() => {
-        let number = 0;
-
-        for (let index = 1; index < links.length; ++index)
-        {
-            if (links[index].link === document.location.pathname)
-            {
-                number = index;
-                break;
-            }
-        }
-
-        changeActiveLink(number);
-    } , []);
-
     const logout = () => {
         setIsAuth(false);
-        localStorage.removeItem('auth', )
+        localStorage.removeItem('auth', );
     }
     
     return (
         <div className={cl.navbar}>
             {links.map((link, index) => {
-                if (numberActiveLink === index){
-                    return <Link key={index} className={cl.navbar__activeLink} to={link.link}>{link.title}</Link>
-                }
-                else  
-                {
-                    return <Link 
-                                key={index} 
-                                className={cl.navbar__link} 
-                                to={link.link}
-                                onClick={() => changeActiveLink(index)}>
-                                    {link.title}
-                            </Link>
-                }
+                return <Link 
+                            key={index} 
+                            to={link.link}>
+                                {link.title}
+                        </Link>
             })}
 
-            <a onClick={logout}>Logout</a>
+            {isAuth 
+                ?
+                    <a onClick={logout}>Logout</a>
+                :
+                    <Link  key={4} 
+                        to={"/login"}>
+                            Log in / Sign Up
+                    </Link>
+            }
         </div>
     );
 };

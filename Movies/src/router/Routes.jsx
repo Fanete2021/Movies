@@ -8,5 +8,7 @@ export const privateRoutes = [
 ]
 
 export const publicRoutes = [
+    { path: '/movies', component: Movies, exact: true },
+    { path: '/actors', component: Actors, exact: true },
     { path: '/login', component: Login, exact: true },
 ]

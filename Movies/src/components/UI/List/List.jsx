@@ -2,7 +2,6 @@
 import cl from './list.module.scss';
 
 const List = function ( {title, entities, countEntities, isEntitiesLoading, getItem }) {
-
     if (!entities.length) {
         return (
             <div className={cl.content}>

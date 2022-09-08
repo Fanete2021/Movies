@@ -9,11 +9,13 @@ const ActorItem = function (props) {
                 <strong>{props.actor.name} {props.actor.surname}</strong>
             </div>
             
-            <div className={cl.btn}>
-                <Button onClick={() => props.remove(props.actor)}>
-                    Delete
-                </Button>
-            </div>
+            {props.isAuth &&
+                <div className={cl.btn}>
+                    <Button onClick={() => props.remove(props.actor)}>
+                        Delete
+                    </Button>
+                </div>
+            }
         </div>
     );
 };

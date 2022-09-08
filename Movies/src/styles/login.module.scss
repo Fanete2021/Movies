@@ -1,0 +1,38 @@
+.login {
+    width: 30vw;
+    margin: 100px 35vw 0;
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    background-color: white;
+    height: 22vw;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.login__choice {
+    margin: 20px 25%;
+
+    span {
+        margin: 0 20px;
+        font-size: 20px;
+        cursor: pointer;
+    }
+
+    .activeSpan {
+        color: teal;
+        font-weight: 700;
+        cursor: default;
+    }
+}
+
+form {
+    margin: 0 20%;
+
+    Button {
+        position: absolute;
+        margin: 0 12.5% 5px;
+        width: 10vw;
+        bottom: 15px;
+    }
+}

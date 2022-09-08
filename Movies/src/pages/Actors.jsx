@@ -6,10 +6,12 @@ import Loader from '../components/UI/Loader/Loader';
 import PageNavigation from '../components/UI/PageNavigation/PageNavigation';
 import { useFetching } from '../hooks/useFetching';
 import { getPageCount } from '../utils/pages';
-import '../styles/pages.scss';
+import '../styles/infoPages.scss';
 import Service from '../API/Service';
 import ActorItem from '../components/UI/Actor/ActorItem';
 import List from '../components/UI/List/List';
+import { useContext } from 'react';
+import { Context } from '../context';
 
 function Actors() {
     const [visibleCreature, setVisibleCreature] = useState(false);
@@ -19,6 +21,7 @@ function Actors() {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalCountActors, setTotalCountActors] = useState(0);
     const APIService = 'actors';
+    const {isAuth} = useContext(Context);
 
     const [fetchActors, isActorsLoading] = useFetching(async (limit, page) => {
 
@@ -91,14 +94,16 @@ function Actors() {
     }
 
     const getActorItem = (actor, id) => {
-        return <ActorItem remove={removeActor} actor={actor} key={id} />
+        return <ActorItem isAuth={isAuth} remove={removeActor} actor={actor} key={id} />
     }
 
     return (
         <div className="infoBlock">
-            <Button onClick={() => setVisibleCreature(true)}>
-                Add
-            </Button>
+            {isAuth &&
+                <Button onClick={() => setVisibleCreature(true)}>
+                    Add
+                </Button>
+            }  
 
             {visibleCreature &&
                 <Creator setVisible={setVisibleCreature} >

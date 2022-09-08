@@ -16,17 +16,18 @@ const MovieItem = function (props) {
 
                 <div className={cl.movie__description}>{props.movie.description}</div>
 
-
                 <div>
                     <strong>Cast: </strong>{props.movie.actors.map(actor => actor.name + ' ' + actor.surname).join(', ')}
                 </div>
             </div>
 
-            <div className={cl.btn}>
-                <Button onClick={() => props.remove(props.movie)}>
-                    Delete
-                </Button>
-            </div>
+            {props.isAuth &&
+                <div className={cl.btn}>
+                    <Button onClick={() => props.remove(props.movie)}>
+                        Delete
+                    </Button>
+                </div>
+            }
         </div>
     );
 };

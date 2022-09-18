@@ -10,10 +10,10 @@ namespace API.DAL.Migrations
                 name: "Actors",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(nullable: true),
-                    Surname = table.Column<string>(nullable: true)
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Surname = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -24,9 +24,9 @@ namespace API.DAL.Migrations
                 name: "Genres",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Title = table.Column<string>(nullable: true)
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -37,11 +37,11 @@ namespace API.DAL.Migrations
                 name: "Movies",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Title = table.Column<string>(nullable: true),
-                    Description = table.Column<string>(nullable: true),
-                    PremiereYear = table.Column<int>(nullable: false)
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PremiereYear = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -49,48 +49,52 @@ namespace API.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "MovieActor",
+                name: "ActorMovie",
                 columns: table => new
                 {
-                    IdMovie = table.Column<int>(nullable: false),
-                    IdActor = table.Column<int>(nullable: false)
+                    ConnectionId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ActorId = table.Column<int>(type: "int", nullable: false),
+                    MovieId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_MovieActor", x => new { x.IdMovie, x.IdActor });
+                    table.PrimaryKey("PK_ActorMovie", x => x.ConnectionId);
                     table.ForeignKey(
-                        name: "FK_MovieActor_Actors_IdActor",
-                        column: x => x.IdActor,
+                        name: "FK_ActorMovie_Actors_ActorId",
+                        column: x => x.ActorId,
                         principalTable: "Actors",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_MovieActor_Movies_IdMovie",
-                        column: x => x.IdMovie,
+                        name: "FK_ActorMovie_Movies_MovieId",
+                        column: x => x.MovieId,
                         principalTable: "Movies",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "MovieGenre",
+                name: "GenreMovie",
                 columns: table => new
                 {
-                    idMovie = table.Column<int>(nullable: false),
-                    IdGenre = table.Column<int>(nullable: false)
+                    ConnectionId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    GenreId = table.Column<int>(type: "int", nullable: false),
+                    MovieId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_MovieGenre", x => new { x.idMovie, x.IdGenre });
+                    table.PrimaryKey("PK_GenreMovie", x => x.ConnectionId);
                     table.ForeignKey(
-                        name: "FK_MovieGenre_Genres_IdGenre",
-                        column: x => x.IdGenre,
+                        name: "FK_GenreMovie_Genres_GenreId",
+                        column: x => x.GenreId,
                         principalTable: "Genres",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_MovieGenre_Movies_idMovie",
-                        column: x => x.idMovie,
+                        name: "FK_GenreMovie_Movies_MovieId",
+                        column: x => x.MovieId,
                         principalTable: "Movies",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -113,23 +117,33 @@ namespace API.DAL.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_MovieActor_IdActor",
-                table: "MovieActor",
-                column: "IdActor");
+                name: "IX_ActorMovie_ActorId",
+                table: "ActorMovie",
+                column: "ActorId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_MovieGenre_IdGenre",
-                table: "MovieGenre",
-                column: "IdGenre");
+                name: "IX_ActorMovie_MovieId",
+                table: "ActorMovie",
+                column: "MovieId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GenreMovie_GenreId",
+                table: "GenreMovie",
+                column: "GenreId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GenreMovie_MovieId",
+                table: "GenreMovie",
+                column: "MovieId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "MovieActor");
+                name: "ActorMovie");
 
             migrationBuilder.DropTable(
-                name: "MovieGenre");
+                name: "GenreMovie");
 
             migrationBuilder.DropTable(
                 name: "Actors");

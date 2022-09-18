@@ -37,13 +37,11 @@ namespace API.DAL.Repositories
             return await db.Actors.FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public async Task<List<Actor>> GetAsync(string name, int limit, int page, int[] idBanned)
+        public async Task<List<Actor>> GetAsync(string name, int[] BannedIds)
         {
-            return await db.Actors.
-                Where(actor => idBanned.Contains(actor.Id) == false && (actor.Name + ' ' + actor.Surname).ToLower()
+            return await db.Actors
+                .Where(actor => BannedIds.Contains(actor.Id) == false && (actor.Name + ' ' + actor.Surname).ToLower()
                 .Contains(name.ToLower()))
-                .Skip(limit * (page - 1))
-                .Take(limit)
                 .ToListAsync();
         }
 
@@ -51,15 +49,9 @@ namespace API.DAL.Repositories
         {
             return await db.Actors.ToListAsync();
         }
-
-        public async Task<int> GetCountAsync()
-        {
-            return await db.Actors.CountAsync();
-        }
-
         public async Task<Actor> GetLastAsync()
         {
-            var count = await GetCountAsync();
+            var count = await db.Actors.CountAsync();
             return db.Actors.Skip(count - 1).First();
         }
 

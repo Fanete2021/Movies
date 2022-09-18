@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using API.Domain.Entity;
-using API.Domain.Entity.Configuration;
 
 namespace API.DAL
 {
@@ -13,9 +12,6 @@ namespace API.DAL
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.ApplyConfiguration(new MovieActorConfiguration());
-            modelBuilder.ApplyConfiguration(new MovieGenreConfiguration());
-
             //Filling in genres during migration
             modelBuilder.Entity<Genre>()
                 .HasData(
@@ -29,12 +25,38 @@ namespace API.DAL
                     new Genre { Id = 8, Title = "Thriller" },
                     new Genre { Id = 9, Title = "Horror" }
                 );
+
+            modelBuilder.Entity<Movie>()
+                .HasMany(m => m.Genres)
+                .WithMany(g => g.Movies)
+                .UsingEntity<GenreMovie>(
+                    mg => mg.HasOne(prop => prop.Genre).WithMany().HasForeignKey(prop => prop.GenreId),
+                    mg => mg.HasOne(prop => prop.Movie).WithMany().HasForeignKey(prop => prop.MovieId),
+                    mg =>
+                    {
+                        mg.HasKey(prop => prop.ConnectionId);
+                        mg.Property(prop => prop.ConnectionId).ValueGeneratedOnAdd();
+                    }
+                );
+
+            modelBuilder.Entity<Movie>()
+                .HasMany(m => m.Actors)
+                .WithMany(a => a.Movies)
+                .UsingEntity<ActorMovie>(
+                    ma => ma.HasOne(prop => prop.Actor).WithMany().HasForeignKey(prop => prop.ActorId),
+                    ma => ma.HasOne(prop => prop.Movie).WithMany().HasForeignKey(prop => prop.MovieId),
+                    ma =>
+                    {
+                        ma.HasKey(prop => prop.ConnectionId);
+                        ma.Property(prop => prop.ConnectionId).ValueGeneratedOnAdd();
+                    }
+                );
         }
 
         public DbSet<Movie> Movies { get; set; }
         public DbSet<Actor> Actors { get; set; }
         public DbSet<Genre> Genres { get; set; }
-        public DbSet<MovieGenre> MovieGenre { get; set; }
-        public DbSet<MovieActor> MovieActor { get; set; }
+        public DbSet<ActorMovie> ActorMovie { get; set; }
+        public DbSet<GenreMovie> GenreMovie { get; set; }
     }
 }

@@ -8,16 +8,13 @@ namespace API.Service.Interfaces
 {
     public interface IMovieService
     {
-        Task<BaseResponce<IEnumerable<Movie>>> GetMoviesAsync(int[] idActors, int[] idGenres, string title);
+        Task<BaseResponce<IEnumerable<Movie>>> GetMoviesAsync(int[] ActorIds, int[] GenreIds, string title, int limit, int page);
         Task<BaseResponce<Movie>> GetMovieAsync(int id);
-        Task<BaseResponce<MovieViewModel>> CreateMovieAsync(MovieViewModel model);
-        Task<BaseResponce<MovieGenre>> AddGenreAsync(MovieGenre model);
-        Task<BaseResponce<MovieActor>> AddActorAsync(MovieActor model);
-        Task<BaseResponce<bool>> DeleteMovieAsync(int id);
-        Task<BaseResponce<int>> GetCountMoviesAsync();
-        Task<BaseResponce<Movie>> GetLastMovieAsync();
-        Task<BaseResponce<Movie>> EditMovieAsync(int id, MovieViewModel model);
-        Task<BaseResponce<IEnumerable<Actor>>> GetMovieActorsAsync(int id);
-        Task<BaseResponce<IEnumerable<Genre>>> GetMovieGenresAsync(int id);
+        Task<BaseResponce<MovieViewModel>> CreateAsync(MovieViewModel model);
+        Task<BaseResponce<GenreMovie>> AddGenreAsync(GenreMovie genreMovie);
+        Task<BaseResponce<ActorMovie>> AddActorAsync(ActorMovie actorMovie);
+        Task<BaseResponce<bool>> DeleteAsync(int id);
+        Task<BaseResponce<Movie>> GetLastAsync();
+        Task<BaseResponce<Movie>> EditAsync(int id, MovieViewModel model);
     }
 }

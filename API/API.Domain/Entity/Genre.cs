@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text;
+using System.Text.Json.Serialization;
 
 namespace API.Domain.Entity
 {
@@ -13,6 +12,7 @@ namespace API.Domain.Entity
         public int Id { get; set; }
         public string Title { get; set; }
 
-        public List<MovieGenre> MovieGenre { get; set; } = new List<MovieGenre>();
+        [JsonIgnore]
+        public List<Movie> Movies { get; set; } = new List<Movie>();
     }
 }

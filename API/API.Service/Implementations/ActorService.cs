@@ -6,6 +6,7 @@ using API.Service.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace API.Service.Implementations
 {
@@ -18,7 +19,7 @@ namespace API.Service.Implementations
             this.actorRepository = actorRepository;
         }
 
-        public async Task<BaseResponce<Actor>> GetLastActorAsync()
+        public async Task<BaseResponce<Actor>> GetLastAsync()
         {
             var baseResponse = new BaseResponce<Actor>();
             try
@@ -42,7 +43,7 @@ namespace API.Service.Implementations
             {
                 return new BaseResponce<Actor>()
                 {
-                    DescriptionError = $"[GetLastActorAsync]: {ex.Message}",
+                    DescriptionError = $"[ActorService.GetLastAsync]: {ex.Message}",
                     StatusCode = Domain.Enum.StatusCode.InternalServerError
                 };
             }
@@ -73,24 +74,22 @@ namespace API.Service.Implementations
             {
                 return new BaseResponce<Actor>()
                 {
-                    DescriptionError = $"[GetActorAsync]: {ex.Message}",
+                    DescriptionError = $"[ActorService.GetActorAsync]: {ex.Message}",
                     StatusCode = Domain.Enum.StatusCode.InternalServerError
                 };
             }
         }
 
-        public async Task<BaseResponce<IEnumerable<Actor>>> GetActorAsync(string name, int limit, int page, int[] idBanned)
+        public async Task<BaseResponce<IEnumerable<Actor>>> GetActorsAsync(string name, int[] BannedIds, int limit, int page)
         {
             var baseResponse = new BaseResponce<IEnumerable<Actor>>();
 
             try
             {
-                var actors = await actorRepository.GetAsync(name, limit, page, idBanned);
+                var actors = await actorRepository.GetAsync(name, BannedIds);
 
-                if (actors.Count == 0)
-                {
-                    baseResponse.Data = new List<Actor>();
-                } else baseResponse.Data = actors;
+                baseResponse.Data = actors.Skip(limit * (page - 1)).Take(limit);
+                baseResponse.TotalCount = actors.Count;
 
                 baseResponse.StatusCode = Domain.Enum.StatusCode.OK;
 
@@ -100,13 +99,13 @@ namespace API.Service.Implementations
             {
                 return new BaseResponce<IEnumerable<Actor>>()
                 {
-                    DescriptionError = $"[GetActorAsync]: {ex.Message}",
+                    DescriptionError = $"[ActorService.GetActorsAsync]: {ex.Message}",
                     StatusCode = Domain.Enum.StatusCode.InternalServerError
                 };
             }
         }
 
-        public async Task<BaseResponce<ActorViewModel>> CreateActorAsync(ActorViewModel model)
+        public async Task<BaseResponce<ActorViewModel>> CreateAsync(ActorViewModel model)
         {
             var baseResponse = new BaseResponce<ActorViewModel>();
 
@@ -129,13 +128,13 @@ namespace API.Service.Implementations
             {
                 return new BaseResponce<ActorViewModel>()
                 {
-                    DescriptionError = $"[CreateActorAsync]: {ex.Message}",
+                    DescriptionError = $"[ActorService.CreateAsync]: {ex.Message}",
                     StatusCode = Domain.Enum.StatusCode.DataWithErrors
                 };
             }
         }
 
-        public async Task<BaseResponce<bool>> DeleteActorAsync(int id)
+        public async Task<BaseResponce<bool>> DeleteAsync(int id)
         {
             var baseResponse = new BaseResponce<bool>();
 
@@ -163,13 +162,13 @@ namespace API.Service.Implementations
                 return new BaseResponce<bool>()
                 {
                     Data = false,
-                    DescriptionError = $"[ActorMovieAsync]: {ex.Message}",
+                    DescriptionError = $"[ActorService.DeleteAsync]: {ex.Message}",
                     StatusCode = Domain.Enum.StatusCode.InternalServerError
                 };
             }
         }
 
-        public async Task<BaseResponce<Actor>> EditActorAsync(int id, ActorViewModel model)
+        public async Task<BaseResponce<Actor>> EditAsync(int id, ActorViewModel model)
         {
             var baseResponse = new BaseResponce<Actor>();
 
@@ -196,31 +195,8 @@ namespace API.Service.Implementations
             {
                 return new BaseResponce<Actor>()
                 {
-                    DescriptionError = $"[EditMovieAsync]: {ex.Message}",
+                    DescriptionError = $"[ActorService.EditAsync]: {ex.Message}",
                     StatusCode = Domain.Enum.StatusCode.DataWithErrors
-                };
-            }
-        }
-
-        public async Task<BaseResponce<int>> GetCountActorsAsync()
-        {
-            var baseResponse = new BaseResponce<int>();
-
-            try
-            {
-                var count = await actorRepository.GetCountAsync();
-
-                baseResponse.Data = count;
-                baseResponse.StatusCode = Domain.Enum.StatusCode.OK;
-
-                return baseResponse;
-            }
-            catch (Exception ex)
-            {
-                return new BaseResponce<int>()
-                {
-                    DescriptionError = $"[GetCountActorsAsync]: {ex.Message}",
-                    StatusCode = Domain.Enum.StatusCode.InternalServerError
                 };
             }
         }

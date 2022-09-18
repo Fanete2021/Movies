@@ -6,6 +6,7 @@ using API.Service.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace API.Service.Implementations
 {
@@ -13,22 +14,20 @@ namespace API.Service.Implementations
     {
         private readonly IMovieRepository movieRepository;
 
-        public MovieService(IMovieRepository movieRepository)
+        public MovieService(IMovieRepository movieRepository, IActorRepository actorRepository, IGenreRepository genreRepository)
         {
             this.movieRepository = movieRepository;
         }
 
-        public async Task<BaseResponce<IEnumerable<Movie>>> GetMoviesAsync(int[] idActors, int[] idGenres, string title)
+        public async Task<BaseResponce<IEnumerable<Movie>>> GetMoviesAsync(int[] ActorsIds, int[] GenreIds, string title, int limit, int page)
         {
             var baseResponse = new BaseResponce<IEnumerable<Movie>>();
             try
             {
-                var movies = await movieRepository.SelectAsync(idActors, idGenres, title);
+                var movies = await movieRepository.SelectAsync(ActorsIds, GenreIds, title);
 
-                if (movies.Count == 0)
-                {
-                    baseResponse.Data = new List<Movie>();
-                } else baseResponse.Data = movies;
+                baseResponse.Data = movies.Skip(limit * (page - 1)).Take(limit);
+                baseResponse.TotalCount = movies.Count;
 
                 baseResponse.StatusCode = Domain.Enum.StatusCode.OK;
 
@@ -38,7 +37,7 @@ namespace API.Service.Implementations
             {
                 return new BaseResponce<IEnumerable<Movie>>()
                 {
-                    DescriptionError = $"[GetMovies]: {ex.Message}",
+                    DescriptionError = $"[MovieService.GetMoviesAsync]: {ex.Message}",
                     StatusCode = Domain.Enum.StatusCode.InternalServerError
                 };
             }
@@ -69,13 +68,13 @@ namespace API.Service.Implementations
             {
                 return new BaseResponce<Movie>()
                 {
-                    DescriptionError = $"[GetMovie]: {ex.Message}",
+                    DescriptionError = $"[MovieService.GetMovieAsync]: {ex.Message}",
                     StatusCode = Domain.Enum.StatusCode.InternalServerError
                 };
             }
         }
 
-        public async Task<BaseResponce<Movie>> GetLastMovieAsync()
+        public async Task<BaseResponce<Movie>> GetLastAsync()
         {
             var baseResponse = new BaseResponce<Movie>();
             try
@@ -99,13 +98,13 @@ namespace API.Service.Implementations
             {
                 return new BaseResponce<Movie>()
                 {
-                    DescriptionError = $"[GetLastMovieAsync]: {ex.Message}",
+                    DescriptionError = $"[MovieService.GetLastAsync]: {ex.Message}",
                     StatusCode = Domain.Enum.StatusCode.InternalServerError
                 };
             }
         }
 
-        public async Task<BaseResponce<MovieViewModel>> CreateMovieAsync(MovieViewModel model)
+        public async Task<BaseResponce<MovieViewModel>> CreateAsync(MovieViewModel model)
         {
             var baseResponse = new BaseResponce<MovieViewModel>();
 
@@ -115,7 +114,7 @@ namespace API.Service.Implementations
                 {
                     Title = model.Title,
                     Description = model.Description,
-                    PremiereYear = model.PremiereYear
+                    PremiereYear = model.PremiereYear,
                 };
 
                 await movieRepository.CreateAsync(movie);
@@ -129,70 +128,58 @@ namespace API.Service.Implementations
             {
                 return new BaseResponce<MovieViewModel>()
                 {
-                    DescriptionError = $"[CreateMovieAsync]: {ex.Message}",
+                    DescriptionError = $"[MovieService.CreateAsync]: {ex.Message}",
                     StatusCode = Domain.Enum.StatusCode.DataWithErrors
                 };
             }
         }
 
-        public async Task<BaseResponce<MovieGenre>> AddGenreAsync(MovieGenre model)
+        public async Task<BaseResponce<GenreMovie>> AddGenreAsync(GenreMovie genreMovie)
         {
-            var baseResponse = new BaseResponce<MovieGenre>();
+            var baseResponse = new BaseResponce<GenreMovie>();
 
             try
             {
-                var movie = new MovieGenre
-                {
-                    IdMovie = model.IdMovie,
-                    IdGenre = model.IdGenre
-                };
+                await movieRepository.AddGenreAsync(genreMovie);
 
-                await movieRepository.AddGenreAsync(movie);
-
-                baseResponse.Data = model;
+                baseResponse.Data = genreMovie;
                 baseResponse.StatusCode = Domain.Enum.StatusCode.OK;
 
                 return baseResponse;
             }
             catch (Exception ex)
             {
-                return new BaseResponce<MovieGenre>()
+                return new BaseResponce<GenreMovie>()
                 {
-                    DescriptionError = $"[AddGenreAsync]: {ex.Message}",
+                    DescriptionError = $"[MovieService.AddGenreAsync]: {ex.Message}",
                     StatusCode = Domain.Enum.StatusCode.DataWithErrors
                 };
             }
         }
-        public async Task<BaseResponce<MovieActor>> AddActorAsync(MovieActor model)
+        public async Task<BaseResponce<ActorMovie>> AddActorAsync(ActorMovie actorMovie)
         {
-            var baseResponse = new BaseResponce<MovieActor>();
+            var baseResponse = new BaseResponce<ActorMovie>();
 
             try
             {
-                var movie = new MovieActor
-                {
-                    IdMovie = model.IdMovie,
-                    IdActor = model.IdActor
-                };
+                await movieRepository.AddActorAsync(actorMovie);
 
-                await movieRepository.AddActorAsync(movie);
-
-                baseResponse.Data = model;
+                baseResponse.Data = actorMovie;
                 baseResponse.StatusCode = Domain.Enum.StatusCode.OK;
 
                 return baseResponse;
             }
             catch (Exception ex)
             {
-                return new BaseResponce<MovieActor>()
+                return new BaseResponce<ActorMovie>()
                 {
-                    DescriptionError = $"[AddActorAsync]: {ex.Message}",
+                    DescriptionError = $"[MovieService.AddActorAsync]: {ex.Message}",
                     StatusCode = Domain.Enum.StatusCode.DataWithErrors
                 };
             }
         }
 
-        public async Task<BaseResponce<bool>> DeleteMovieAsync(int id)
+        public async Task<BaseResponce<bool>> DeleteAsync(int id)
         {
             var baseResponse = new BaseResponce<bool>();
 
@@ -220,13 +207,13 @@ namespace API.Service.Implementations
                 return new BaseResponce<bool>()
                 {
                     Data = false,
-                    DescriptionError = $"[DeleteMovieAsync]: {ex.Message}",
+                    DescriptionError = $"[MovieService.DeleteAsync]: {ex.Message}",
                     StatusCode = Domain.Enum.StatusCode.InternalServerError
                 };
             }
         }
 
-        public async Task<BaseResponce<Movie>> EditMovieAsync(int id, MovieViewModel model)
+        public async Task<BaseResponce<Movie>> EditAsync(int id, MovieViewModel model)
         {
             var baseResponse = new BaseResponce<Movie>();
 
@@ -254,86 +241,8 @@ namespace API.Service.Implementations
             {
                 return new BaseResponce<Movie>()
                 {
-                    DescriptionError = $"[EditMovieAsync]: {ex.Message}",
+                    DescriptionError = $"[MovieService.EditAsync]: {ex.Message}",
                     StatusCode = Domain.Enum.StatusCode.DataWithErrors
-                };
-            }
-        }
-
-        public async Task<BaseResponce<IEnumerable<Actor>>> GetMovieActorsAsync(int movieId)
-        {
-            var baseResponse = new BaseResponce<IEnumerable<Actor>>();
-            try
-            {
-                var actors = await movieRepository.GetActorsAsync(movieId);
-
-                if (actors.Count == 0)
-                {
-                    baseResponse.Data = new List<Actor>();
-                }
-                else baseResponse.Data = actors;
-
-
-                baseResponse.Data = actors;
-                baseResponse.StatusCode = Domain.Enum.StatusCode.OK;
-
-                return baseResponse;
-            }
-            catch (Exception ex)
-            {
-                return new BaseResponce<IEnumerable<Actor>>()
-                {
-                    DescriptionError = $"[GetMovieActorsAsync]: {ex.Message}",
-                    StatusCode = Domain.Enum.StatusCode.InternalServerError
-                };
-            }
-        }
-
-        public async Task<BaseResponce<IEnumerable<Genre>>> GetMovieGenresAsync(int movieId)
-        {
-            var baseResponse = new BaseResponce<IEnumerable<Genre>>();
-            try
-            {
-                var genres = await movieRepository.GetGenresAsync(movieId);
-
-                if (genres.Count == 0)
-                {
-                    baseResponse.Data = new List<Genre>();
-                } else baseResponse.Data = genres;
-
-                baseResponse.StatusCode = Domain.Enum.StatusCode.OK;
-
-                return baseResponse;
-            }
-            catch (Exception ex)
-            {
-                return new BaseResponce<IEnumerable<Genre>>()
-                {
-                    DescriptionError = $"[GetMovieGenresAsync]: {ex.Message}",
-                    StatusCode = Domain.Enum.StatusCode.InternalServerError
-                };
-            }
-        }
-
-        public async Task<BaseResponce<int>> GetCountMoviesAsync()
-        {
-            var baseResponse = new BaseResponce<int>();
-
-            try
-            {
-                var count = await movieRepository.GetCountAsync();
-
-                baseResponse.Data = count;
-                baseResponse.StatusCode = Domain.Enum.StatusCode.OK;
-
-                return baseResponse;
-            }
-            catch (Exception ex)
-            {
-                return new BaseResponce<int>()
-                {
-                    DescriptionError = $"[GetCountMoviesAsync]: {ex.Message}",
-                    StatusCode = Domain.Enum.StatusCode.InternalServerError
                 };
             }
         }

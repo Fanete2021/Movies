@@ -34,8 +34,8 @@ function Movies() {
 
         let params = {
             title: filter.title,
-            idActors: filter.actors.map(a => a.id),
-            idGenres: filter.genres.map(g => g.id),
+            ActorIds: filter.actors.map(a => a.id),
+            GenreIds: filter.genres.map(g => g.id),
             limit: limit,
             page: page
         };
@@ -45,30 +45,25 @@ function Movies() {
         setTotalCountMovies(response.headers['x-total-count']);
         setTotalPages(getPageCount(response.headers['x-total-count'], limitMovies));
 
-        for (let i = 0; i < response.data.length; i++) {
-            response.data[i] = {
-                ...response.data[i],
-                genres: await Service.getDependencies(APIService, response.data[i].id, "genres"),
-                actors: await Service.getDependencies(APIService, response.data[i].id, "actors")
-            }
-        };
-
         setMovies(response.data);
     })
-
+    
     const resetView = () => {
         window.scrollTo(0, 0);
     }
 
+    //When the page starts, we load the movies
     useEffect(() => {
         fetchMovies(limitMovies, currentPage)
     }, [])
 
+    //When changing the page or the interval between the filter,
     useEffect(() => {
         resetView()
         fetchMovies(limitMovies, currentPage)
     }, [debouncedFilter, currentPage])
 
+    //When changing the filter, we return to the first page
     useEffect(() => {
         changePage(1)
     }, [filter])
@@ -81,17 +76,20 @@ function Movies() {
                 ...movie, id: await Service.getLast(APIService)
             }
             
-            movie.genres.map(genre => Service.addDependencies(APIService, "genres",{idMovie: movie.id, idGenre: genre.id}))
-            movie.actors.map(actor => Service.addDependencies(APIService, "actors", {idMovie: movie.id, idActor: actor.id}))
+            movie.genres.map(genre => Service.addDependencies(APIService, "genres",{MovieId: movie.id, GenreId: genre.id}))
+            movie.actors.map(actor => Service.addDependencies(APIService, "actors", {MovieId: movie.id, ActorId: actor.id}))
 
             setVisibleCreature(false);
             setTotalCountMovies(Number(totalCountMovies) + 1);
 
             if (movies.length < 10) {
+                //Checking for a match with the filter
                 if (contains(movie.genres.map(g => g.id), filter.genres.map(g => g.id)) &&
                     contains(movie.actors.map(a => a.id), filter.actors.map(a => a.id)) &&
                     movie.title.toLowerCase().includes(filter.title.toLowerCase()))
+                {
                     setMovies([...movies, movie])
+                }
             } else if (currentPage === totalPages) {
                 setTotalPages(totalPages + 1)
             }

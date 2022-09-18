@@ -38,7 +38,7 @@ namespace API.Service.Implementations
             {
                 return new BaseResponce<IEnumerable<Genre>>()
                 {
-                    DescriptionError = $"[GetGenresAsync]: {ex.Message}",
+                    DescriptionError = $"[GenreService.GetGenresAsync]: {ex.Message}",
                     StatusCode = Domain.Enum.StatusCode.InternalServerError
                 };
             }
@@ -69,7 +69,7 @@ namespace API.Service.Implementations
             {
                 return new BaseResponce<Genre>()
                 {
-                    DescriptionError = $"[GetGenreAsync]: {ex.Message}",
+                    DescriptionError = $"[GenreService.GetGenreAsync]: {ex.Message}",
                     StatusCode = Domain.Enum.StatusCode.InternalServerError
                 };
             }

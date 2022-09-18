@@ -9,5 +9,7 @@ namespace API.Domain.Responce
         public StatusCode StatusCode { get; set; }
 
         public T Data { get; set; }
+
+        public int TotalCount { get; set; }
     }
 }

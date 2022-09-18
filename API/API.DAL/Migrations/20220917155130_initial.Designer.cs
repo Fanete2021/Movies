@@ -9,15 +9,15 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API.DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220904225031_initial")]
+    [Migration("20220917155130_initial")]
     partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.26")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
+                .HasAnnotation("ProductVersion", "5.0.17")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("API.Domain.Entity.Actor", b =>
@@ -36,6 +36,28 @@ namespace API.DAL.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Actors");
+                });
+
+            modelBuilder.Entity("API.Domain.Entity.ActorMovie", b =>
+                {
+                    b.Property<int>("ConnectionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("ActorId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MovieId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ConnectionId");
+
+                    b.HasIndex("ActorId");
+
+                    b.HasIndex("MovieId");
+
+                    b.ToTable("ActorMovie");
                 });
 
             modelBuilder.Entity("API.Domain.Entity.Genre", b =>
@@ -100,6 +122,28 @@ namespace API.DAL.Migrations
                         });
                 });
 
+            modelBuilder.Entity("API.Domain.Entity.GenreMovie", b =>
+                {
+                    b.Property<int>("ConnectionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("GenreId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MovieId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ConnectionId");
+
+                    b.HasIndex("GenreId");
+
+                    b.HasIndex("MovieId");
+
+                    b.ToTable("GenreMovie");
+                });
+
             modelBuilder.Entity("API.Domain.Entity.Movie", b =>
                 {
                     b.Property<int>("Id")
@@ -121,64 +165,42 @@ namespace API.DAL.Migrations
                     b.ToTable("Movies");
                 });
 
-            modelBuilder.Entity("API.Domain.Entity.MovieActor", b =>
-                {
-                    b.Property<int>("IdMovie")
-                        .HasColumnType("int");
-
-                    b.Property<int>("IdActor")
-                        .HasColumnType("int");
-
-                    b.HasKey("IdMovie", "IdActor");
-
-                    b.HasIndex("IdActor");
-
-                    b.ToTable("MovieActor");
-                });
-
-            modelBuilder.Entity("API.Domain.Entity.MovieGenre", b =>
-                {
-                    b.Property<int>("idMovie")
-                        .HasColumnType("int");
-
-                    b.Property<int>("IdGenre")
-                        .HasColumnType("int");
-
-                    b.HasKey("idMovie", "IdGenre");
-
-                    b.HasIndex("IdGenre");
-
-                    b.ToTable("MovieGenre");
-                });
-
-            modelBuilder.Entity("API.Domain.Entity.MovieActor", b =>
+            modelBuilder.Entity("API.Domain.Entity.ActorMovie", b =>
                 {
                     b.HasOne("API.Domain.Entity.Actor", "Actor")
-                        .WithMany("MovieActor")
-                        .HasForeignKey("IdActor")
+                        .WithMany()
+                        .HasForeignKey("ActorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("API.Domain.Entity.Movie", "Movie")
-                        .WithMany("MovieActor")
-                        .HasForeignKey("IdMovie")
+                        .WithMany()
+                        .HasForeignKey("MovieId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Actor");
+
+                    b.Navigation("Movie");
                 });
 
-            modelBuilder.Entity("API.Domain.Entity.MovieGenre", b =>
+            modelBuilder.Entity("API.Domain.Entity.GenreMovie", b =>
                 {
                     b.HasOne("API.Domain.Entity.Genre", "Genre")
-                        .WithMany("MovieGenre")
-                        .HasForeignKey("IdGenre")
+                        .WithMany()
+                        .HasForeignKey("GenreId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("API.Domain.Entity.Movie", "Movie")
-                        .WithMany("MovieGenre")
-                        .HasForeignKey("idMovie")
+                        .WithMany()
+                        .HasForeignKey("MovieId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Genre");
+
+                    b.Navigation("Movie");
                 });
 #pragma warning restore 612, 618
         }

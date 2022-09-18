@@ -34,7 +34,7 @@ namespace API.Controllers
         [HttpGet("last")]
         public async Task<ActionResult<Movie>> GetLastMovie()
         {
-            var response = await _movieService.GetLastMovieAsync();
+            var response = await _movieService.GetLastAsync();
 
             if (response.StatusCode == Domain.Enum.StatusCode.OK)
                 return this.Ok(response.Data);
@@ -43,49 +43,24 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<Movie>> GetMovies([FromQuery] int[] idActors, [FromQuery] int[] idGenres, 
+        public async Task<ActionResult<Movie>> GetMovies([FromQuery] int[] ActorIds, [FromQuery] int[] GenreIds, 
                                                         string title, int limit = 100, int page = 1)
         {
-            var response = await _movieService.GetMoviesAsync(idActors, idGenres, title);
+            var response = await _movieService.GetMoviesAsync(ActorIds, GenreIds, title, limit, page);
 
             if (response.StatusCode == Domain.Enum.StatusCode.OK)
             {
-                Response.Headers["x-total-count"] = response.Data.Count().ToString();
-
-                return this.Ok(response.Data.Skip(limit * (page - 1)).Take(limit));
+                Response.Headers["x-total-count"] = response.TotalCount.ToString();
+                return this.Ok(response.Data);
             }
 
             return this.NotFound(response.DescriptionError);
         }
 
-        [HttpGet("{id}/actors")]
-        public async Task<ActionResult<Movie>> GetMovieActors(int id)
-        {
-            var response = await _movieService.GetMovieActorsAsync(id);
-
-            if (response.StatusCode == Domain.Enum.StatusCode.OK)
-                return this.Ok(response.Data);
-
-            return this.NotFound(response.DescriptionError);
-        }
-
-        [HttpGet("{id}/genres")]
-        public async Task<ActionResult<Movie>> GetMovieGenres(int id)
-        {
-            var response = await _movieService.GetMovieGenresAsync(id);
-
-            if(response.StatusCode == Domain.Enum.StatusCode.OK)
-                return this.Ok(response.Data);
-
-            return this.NotFound(response.DescriptionError);
-        }
-
-
-
         [HttpPost]
         public async Task<ActionResult<Movie>> CreateMovie(MovieViewModel model)
         {
-            var response = await _movieService.CreateMovieAsync(model);
+            var response = await _movieService.CreateAsync(model);
 
             if (response.StatusCode == Domain.Enum.StatusCode.OK)
                 return this.Ok(response.Data);
@@ -94,9 +69,9 @@ namespace API.Controllers
         }
 
         [HttpPost("genres")]
-        public async Task<ActionResult<MovieGenre>> AddGenre(MovieGenre model)
+        public async Task<ActionResult<Movie>> AddGenre(GenreMovie genreMovie)
         {
-            var response = await _movieService.AddGenreAsync(model);
+            var response = await _movieService.AddGenreAsync(genreMovie);
 
             if (response.StatusCode == Domain.Enum.StatusCode.OK)
                 return this.Ok(response.Data);
@@ -105,9 +80,9 @@ namespace API.Controllers
         }
 
         [HttpPost("actors")]
-        public async Task<ActionResult<MovieActor>> AddActor(MovieActor model)
+        public async Task<ActionResult<Movie>> AddActor(ActorMovie actorMovie)
         {
-            var response = await _movieService.AddActorAsync(model);
+            var response = await _movieService.AddActorAsync(actorMovie);
 
             if (response.StatusCode == Domain.Enum.StatusCode.OK)
                 return this.Ok(response.Data);
@@ -118,7 +93,7 @@ namespace API.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<Movie>> DeleteMovie(int id)
         {
-            var response = await _movieService.DeleteMovieAsync(id);
+            var response = await _movieService.DeleteAsync(id);
 
             if (response.StatusCode == Domain.Enum.StatusCode.OK)
                 return this.Ok(response.Data);

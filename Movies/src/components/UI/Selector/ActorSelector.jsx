@@ -19,7 +19,7 @@ const ActorSelector = function ({ addActor, deleteActor, selectedActors }) {
         let params = {
             limit: 10,
             page: 1,
-            idBanned: selectedActors.map(a => a.id),
+            BannedIds: selectedActors.map(a => a.id),
             name: name
         };
         let APIService = "actors";

@@ -4,41 +4,22 @@ using API.Domain.Entity;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
+using System;
 
 namespace API.DAL.Repositories
 {
     public class MovieRepository : IMovieRepository
     {
         private readonly ApplicationDbContext db;
-        private readonly ActorRepository actorRepository;
-        private readonly GenreRepository genreRepository;
 
         public MovieRepository(ApplicationDbContext db)
         {
             this.db = db;
-            actorRepository = new ActorRepository(db);
-            genreRepository = new GenreRepository(db);
         }
 
         public async Task<bool> CreateAsync(Movie entity)
         {
             await db.Movies.AddAsync(entity);
-            await db.SaveChangesAsync();
-
-            return true;
-        }
-
-        public async Task<bool> AddGenreAsync(MovieGenre entity)
-        {
-            await db.MovieGenre.AddAsync(entity);
-            await db.SaveChangesAsync();
-
-            return true;
-        }
-
-        public async Task<bool> AddActorAsync(MovieActor entity)
-        {
-            await db.MovieActor.AddAsync(entity);
             await db.SaveChangesAsync();
 
             return true;
@@ -54,13 +35,32 @@ namespace API.DAL.Repositories
 
         public async Task<Movie> GetAsync(int id)
         {
-            return await db.Movies.FirstOrDefaultAsync(x => x.Id == id);
+            var movie = await db.Movies.FirstOrDefaultAsync(x => x.Id == id);
+            movie.Actors = await db.ActorMovie.Where(am => am.MovieId == id).Select(am => am.Actor).ToListAsync();
+            movie.Genres = await db.GenreMovie.Where(gm => gm.MovieId == id).Select(gm => gm.Genre).ToListAsync();
+
+            return movie;
         }
 
         public async Task<Movie> GetLastAsync()
         {
-            var count = await GetCountAsync();
+            var count = await db.Movies.CountAsync();
             return db.Movies.Skip(count - 1).First();
+        }
+        public async Task<bool> AddGenreAsync(GenreMovie genreMovie)
+        {
+            await db.GenreMovie.AddAsync(genreMovie);
+            await db.SaveChangesAsync();
+
+            return true;
+        }
+
+        public async Task<bool> AddActorAsync(ActorMovie actorMovie)
+        {
+            await db.ActorMovie.AddAsync(actorMovie);
+            await db.SaveChangesAsync();
+
+            return true;
         }
 
         public async Task<List<Movie>> SelectAsync()
@@ -68,66 +68,23 @@ namespace API.DAL.Repositories
             return await db.Movies.ToListAsync();
         }
 
-        private List<Movie> SearchByGenreAndActor(List<Movie> movies, int[] idGenres, int[] idActors)
-        {
-            var searchedMovies = new List<Movie>();
-            bool isIncluded;
-
-            foreach (var movie in movies)
-            {
-                isIncluded = true;
-
-                if (idGenres.Length > 0)
-                {
-                    var genres = GetGenresAsync(movie.Id).Result.Select(g => g.Id);
-                    foreach (var genre in idGenres)
-                    {
-                        if (!genres.Contains(genre))
-                        {
-                            isIncluded = false;
-                            break;
-                        }
-                    }
-                }
-
-                if (!isIncluded)
-                    continue;
-
-                if (idActors.Length > 0)
-                {
-                    var actors = GetActorsAsync(movie.Id).Result.Select(a => a.Id);
-                    foreach (var actor in idActors)
-                    {
-                        if (!actors.Contains(actor))
-                        {
-                            isIncluded = false;
-                            break;
-                        }
-                    }
-                }
-
-                if (isIncluded)
-                    searchedMovies.Add(movie);
-            }
-
-            return searchedMovies;
-        }
-
-        public async Task<List<Movie>> SelectAsync(int[] idActors, int[] idGenres, string title)
+        public async Task<List<Movie>> SelectAsync(int[] ActorIds, int[] GenreIds, string title)
         {
             if (string.IsNullOrEmpty(title))
                 title = "";
 
             var movies = await db.Movies
-                        .Where(movie => movie.Title.ToLower().Contains(title.ToLower()))
-                        .ToListAsync();
+                                .Where(movie => movie.Title.ToLower().Contains(title.ToLower()))
+                                .Include(m => m.Actors)
+                                .Include(m => m.Genres)
+                                .ToListAsync();
 
-            return SearchByGenreAndActor(movies, idGenres, idActors);
-        }
+            var sortedMovies = movies
+                                .Where(m => ActorIds.Length == 0 || ActorIds.All(ai => m.Actors.Any(a => a.Id == ai)))
+                                .Where(m => GenreIds.Length == 0 || GenreIds.All(gi => m.Genres.Any(g => g.Id == gi)))
+                                .ToList();
 
-        public async Task<int> GetCountAsync()
-        {
-            return await db.Movies.CountAsync();
+            return sortedMovies;
         }
 
         public async Task<Movie> UpdateAsync(Movie entity)
@@ -136,20 +93,6 @@ namespace API.DAL.Repositories
             await db.SaveChangesAsync();
 
             return entity;
-        }
-
-        public async Task<List<Actor>> GetActorsAsync(int id)
-        {
-            var movieAndActors = await db.MovieActor.Where(x => x.IdMovie == id).Select(x => x.IdActor).ToListAsync();
-            var actors = await actorRepository.SelectAsync();
-            return actors.Where(x => movieAndActors.Contains(x.Id)).ToList();
-        }
-
-        public async Task<List<Genre>> GetGenresAsync(int id)
-        {
-            var movieAndGenres = await db.MovieGenre.Where(x => x.IdMovie == id).Select(x => x.IdGenre).ToListAsync();
-            var genres = await genreRepository.SelectAsync();
-            return genres.Where(x => movieAndGenres.Contains(x.Id)).ToList();
         }
     }
 }

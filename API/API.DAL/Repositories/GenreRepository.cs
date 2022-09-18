@@ -47,15 +47,9 @@ namespace API.DAL.Repositories
             return await db.Genres.Skip(limit * (page - 1)).Take(limit).ToListAsync();
         }
 
-        public async Task<int> GetCountAsync()
-        {
-            return await db.Genres.CountAsync();
-        }
-
         public async Task<Genre> GetLastAsync()
         {
-            var count = await GetCountAsync();
-            return db.Genres.Skip(count - 1).First();
+            return await db.Genres.LastAsync();
         }
 
         public async Task<Genre> UpdateAsync(Genre entity)

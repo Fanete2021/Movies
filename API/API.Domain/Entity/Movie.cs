@@ -1,6 +1,4 @@
-﻿using API.Domain.Enum;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -15,7 +13,7 @@ namespace API.Domain.Entity
         public string Description { get; set; }
         public int PremiereYear { get; set; }
 
-        public List<MovieActor> MovieActor { get; set; } = new List<MovieActor>();
-        public List<MovieGenre> MovieGenre { get; set; } = new List<MovieGenre>();
+        public List<Actor> Actors { get; set; } = new List<Actor>();
+        public List<Genre> Genres { get; set; } = new List<Genre>();
     }
 }

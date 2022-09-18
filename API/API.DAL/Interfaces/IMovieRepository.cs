@@ -6,10 +6,8 @@ namespace API.DAL.Interfaces
 {
     public interface IMovieRepository: IBaseRepository<Movie>
     {
-        public Task<List<Actor>> GetActorsAsync(int id);
-        public Task<List<Genre>> GetGenresAsync(int id);
-        public Task<bool> AddGenreAsync(MovieGenre entity);
-        public Task<bool> AddActorAsync(MovieActor entity);
-        public Task<List<Movie>> SelectAsync(int[] idActors, int[] idGenres, string title);
+        public Task<List<Movie>> SelectAsync(int[] ActorIds, int[] GenreIds, string title);
+        public Task<bool> AddGenreAsync(GenreMovie genreMovie);
+        public Task<bool> AddActorAsync(ActorMovie actorMovie);
     }
 }

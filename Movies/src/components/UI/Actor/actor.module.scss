@@ -27,7 +27,7 @@
             color: red;
             border: 1px solid red;
 
-            &:hover {
+            &:enabled:hover {
                 background-color: rgba(255, 0, 0, 0.1);
             }
         }
@@ -36,14 +36,12 @@
 
 //ActorForm
 .form {
-    .btn {
-        display: inline;
-        opacity: 0.2;
-        pointer-events: none;
+    Input {
+        margin: 0 0 15px;
     }
-    
-    .btnActive {
-        display: inline;
-        opacity: 1;
+
+    .error {
+        color: red;
+        font-size: 15px;
     }
 }

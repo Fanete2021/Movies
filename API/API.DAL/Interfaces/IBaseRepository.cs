@@ -5,10 +5,7 @@ namespace API.DAL.Interfaces
 {
     public interface IBaseRepository<T>
     {
-        Task<bool> CreateAsync(T entity);
-        Task<T> GetAsync(int id);
-        Task<T> GetLastAsync();
-        Task<List<T>> SelectAsync();
+        Task<T> CreateAsync(T entity);
         Task<bool> DeleteAsync(T entity);
         Task<T> UpdateAsync(T entity);
 

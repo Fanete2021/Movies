@@ -6,9 +6,11 @@ namespace API.Domain.Entity
 {
     public class GenreMovie
     {
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity), Key]
         public int ConnectionId { get; set; }
+        [Required]
         public int GenreId { get; set; }
+        [Required]
         public int MovieId { get; set; }
         public Genre Genre { get; set; }
         public Movie Movie { get; set; }

@@ -9,8 +9,9 @@ import './styles/app.scss';
 function App() {
     //Initialization of actors and genres data
     const [genres, setGenres] = useState([])
-    const [isAuth, setIsAuth] = useState(false);
     const [isLoading, setLoading] = useState(true);
+    const [login, setLogin] = useState("");
+    const [isAuth, setIsAuth] = useState(false);
 
     const loadingGenres = async () => {
         let APIService = "genres";
@@ -19,19 +20,25 @@ function App() {
         setGenres([...genres, ...response.data]);
     }
 
-    useEffect(() => {
-        loadingGenres();
+    const getUser = async () => {
+        let data = await Service.getUser();
+        setLogin(data);
 
-        if(localStorage.getItem('auth')){
+        if(data) {
             setIsAuth(true);
         }
+    }
+
+    useEffect(() => {
+        loadingGenres();
+        getUser();
 
         setLoading(false);
     }, [])
     
     return (
         <Context.Provider value={{
-            genres, isAuth, setIsAuth, isLoading
+            genres, isLoading, login, isAuth, setIsAuth, getUser
         }}>
             <BrowserRouter>
                 <Navbar/>

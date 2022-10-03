@@ -1,6 +1,7 @@
 ﻿import React from 'react';
 import { useContext } from 'react';
 import { Link } from 'react-router-dom';
+import Service from '../../../API/Service';
 import { Context } from '../../../context';
 import cl from './navbar.module.scss';
 
@@ -17,11 +18,11 @@ const Navbar = function () {
         },
     ]
 
-    const {isAuth, setIsAuth} = useContext(Context);
+    const {isAuth, setIsAuth, login} = useContext(Context);
 
-    const logout = () => {
+    const logout = async () => {
         setIsAuth(false);
-        localStorage.removeItem('auth', );
+        await Service.logout();
     }
     
     return (
@@ -36,9 +37,14 @@ const Navbar = function () {
 
             {isAuth 
                 ?
-                    <a onClick={logout}>Logout</a>
+                    <Link
+                        to={"/login"} 
+                        onClick={logout}>
+                            {login}
+                    </Link>
                 :
-                    <Link  key={4} 
+                    <Link  
+                        key={4} 
                         to={"/login"}>
                             Log in / Sign Up
                     </Link>

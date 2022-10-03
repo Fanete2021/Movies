@@ -68,31 +68,27 @@ function Movies() {
         changePage(1)
     }, [filter])
 
-    const createMovie = async (movie, count) => {
-        for(let i = 0; i < count; ++i)
-        {
-            await Service.addEntity(movie, APIService)
-            movie = {
-                ...movie, id: await Service.getLast(APIService)
-            }
-            
-            movie.genres.map(genre => Service.addDependencies(APIService, "genres",{MovieId: movie.id, GenreId: genre.id}))
-            movie.actors.map(actor => Service.addDependencies(APIService, "actors", {MovieId: movie.id, ActorId: actor.id}))
+    const createMovie = async (movie) => {
+        movie = {
+            ...movie, id: await Service.addEntity(movie, APIService)
+        }
+        
+        movie.genres.map(genre => Service.addDependencies(APIService, "genres",{MovieId: movie.id, GenreId: genre.id}))
+        movie.actors.map(actor => Service.addDependencies(APIService, "actors", {MovieId: movie.id, ActorId: actor.id}))
 
-            setVisibleCreature(false);
-            setTotalCountMovies(Number(totalCountMovies) + 1);
+        setVisibleCreature(false);
+        setTotalCountMovies(Number(totalCountMovies) + 1);
 
-            if (movies.length < 10) {
-                //Checking for a match with the filter
-                if (contains(movie.genres.map(g => g.id), filter.genres.map(g => g.id)) &&
-                    contains(movie.actors.map(a => a.id), filter.actors.map(a => a.id)) &&
-                    movie.title.toLowerCase().includes(filter.title.toLowerCase()))
-                {
-                    setMovies([...movies, movie])
-                }
-            } else if (currentPage === totalPages) {
-                setTotalPages(totalPages + 1)
+        if (movies.length < 10) {
+            //Checking for a match with the filter
+            if (contains(movie.genres.map(g => g.id), filter.genres.map(g => g.id)) &&
+                contains(movie.actors.map(a => a.id), filter.actors.map(a => a.id)) &&
+                movie.title.toLowerCase().includes(filter.title.toLowerCase()))
+            {
+                setMovies([...movies, movie])
             }
+        } else if (currentPage === totalPages) {
+            setTotalPages(totalPages + 1)
         }
     }
 
@@ -126,13 +122,13 @@ function Movies() {
 
     return (
         <div className="infoBlock">
-            <MovieFilter filter={filter} setFilter={setFilter} />
+            <div className="filter">
+                <MovieFilter filter={filter} setFilter={setFilter}/>
+            </div>
 
-            {isAuth &&
-                <Button onClick={() => setVisibleCreature(true)}>
-                    Add
-                </Button>
-            }
+            <Button disabled={!isAuth} onClick={() => setVisibleCreature(true)}>
+                Add
+            </Button>
 
             {visibleCreature &&
                 <Creator setVisible={setVisibleCreature}>

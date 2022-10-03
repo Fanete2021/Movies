@@ -12,7 +12,7 @@
 #### do not disable cmd.
 
 #### 3) Open SSMS. In the window that opens, copy the value from the "server name" field
-#### Open the appsettings.json file in the API directory. In the DefaultConnection field, paste the copied value before "Database="
+#### Open the appsettings.json file in the API/API directory. In the DefaultConnection field, paste the copied value before "Database="
 
 #### 4) Open the Movies directory, run cmd and enter:
 *	npm install

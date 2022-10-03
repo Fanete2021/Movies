@@ -11,6 +11,10 @@
 
         ActorNotFound = 2,
 
-        GenreNotFound = 3
+        GenreNotFound = 3,
+
+        RegexNotMatch = 4,
+        UserNotFound = 5,
+        InvalidCredentials = 6
     }
 }

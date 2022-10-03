@@ -9,6 +9,7 @@ using API.DAL.Interfaces;
 using API.Service.Interfaces;
 using API.DAL.Repositories;
 using API.Service.Implementations;
+using Microsoft.AspNetCore.Http;
 
 namespace API
 {
@@ -24,6 +25,8 @@ namespace API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors();
+
             var connection = Configuration.GetConnectionString("DefaultConnection");
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connection));
@@ -34,10 +37,10 @@ namespace API
             services.AddScoped<IActorService, ActorService>();
             services.AddScoped<IGenreRepository, GenreRepository>();
             services.AddScoped<IGenreService, GenreService>();
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IJwtService, JwtService>();
 
-            services.AddCors(options => options.AddDefaultPolicy(
-                    builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod().WithExposedHeaders("x-total-count")
-                ));
 
             services.AddControllers();
         }
@@ -50,11 +53,15 @@ namespace API
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseHttpsRedirection();
-
             app.UseRouting();
 
-            app.UseCors();
+            app.UseCors(options => options
+                .WithOrigins(new[] { "http://localhost:3000" })
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials()
+                .WithExposedHeaders("x-total-count")
+            );
 
             app.UseAuthorization();
 

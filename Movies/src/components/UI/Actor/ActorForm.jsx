@@ -1,12 +1,15 @@
 ﻿import React, { useState } from 'react';
 import { useEffect } from 'react';
+import useInput from '../../../hooks/useInput';
 import Button from '../Button/Button';
 import Input from '../Input/Input';
 import cl from './actor.module.scss';
 
 const ActorForm = function ({ create }) {
-    const [actor, setActor] = useState({ name: '', surname: '' });
-    const [btnClass, setBtnClass]  = useState(cl.btn);
+    const [actor, setActor] = useState({ name: '', surname: ''});
+    const [disabled, setDisabled] = useState(true);
+    const name = useInput('', {length: {min: 2, max: 16}, regex: /^[a-zA-Zа-яА-Я'][a-zA-Zа-яА-Я-' ]+[a-zA-Zа-яА-Я']?$/u});
+    const surname = useInput('', {length: {min: 2, max: 16}, regex: /^[a-zA-Zа-яА-Я'][a-zA-Zа-яА-Я-' ]+[a-zA-Zа-яА-Я']?$/u});
 
     async function addNewActor(e){
         e.preventDefault();
@@ -14,40 +17,45 @@ const ActorForm = function ({ create }) {
     }
 
     useEffect(() => {
-        var isEmpty = false;
+        setDisabled(false)
 
         for (let key in actor) {
-            if (actor[key].length === 0)
+            if (!actor[key])
             {
-                isEmpty = true;
+                setDisabled(true);
                 break;
             }
         }
 
-        if (!isEmpty) 
-            setBtnClass(cl.btnActive)
-        else 
-            setBtnClass(cl.btn)
+        if(name.error || surname.error)
+            setDisabled(true);
     }, [actor])
+
+    useEffect(() => {
+        setActor({...actor, name: name.value, surname: surname.value});
+    }, [name.value, surname.value])
 
     return (
         <div className={cl.form}>
+            {(name.isDirty && name.error) && <div className={cl.error}>{name.error}</div>}
             <Input
-                value={actor.name}
-                onChange={e => setActor({ ...actor, name: e.target.value })}
+                value={name.value}
+                onChange={e => name.onChange(e)}
+                onBlur={e => name.onBlur(e)}
                 type="text"
                 placeholder="Name"
             />
+
+            {(surname.isDirty && surname.error) && <div className={cl.error}>{surname.error}</div>}
             <Input
-                value={actor.surname}
-                onChange={e => setActor({ ...actor, surname: e.target.value})}
+                value={surname.value}
+                onChange={e => surname.onChange(e)}
+                onBlur={e => surname.onBlur(e)}
                 type="text"
                 placeholder="Surname"
             />
 
-            <div className={btnClass}>
-                <Button onClick={addNewActor}>Add</Button>
-            </div>
+            <Button disabled={disabled} onClick={addNewActor}>Add</Button>
         </div>
     );
 };

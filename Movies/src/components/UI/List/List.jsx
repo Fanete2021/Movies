@@ -19,8 +19,8 @@ const List = function ( {title, entities, countEntities, isEntitiesLoading, getI
                     {title} ({countEntities})
                 </h1>
             }
-            {entities.map(actor => 
-                getItem(actor, actor.id)
+            {entities.map(entity => 
+                getItem(entity, entity.id)
             )}
         </div>
     );

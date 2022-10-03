@@ -16,12 +16,12 @@ namespace API.DAL.Repositories
             this.db = db;
         }
 
-        public async Task<bool> CreateAsync(Actor entity)
+        public async Task<Actor> CreateAsync(Actor entity)
         {
             await db.Actors.AddAsync(entity);
             await db.SaveChangesAsync();
 
-            return true;
+            return entity;
         }
 
         public async Task<bool> DeleteAsync(Actor entity)
@@ -32,29 +32,20 @@ namespace API.DAL.Repositories
             return true;
         }
 
-        public async Task<Actor> GetAsync(int id)
+        public async Task<Actor> GetActorAsync(int id)
         {
             return await db.Actors.FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public async Task<List<Actor>> GetAsync(string name, int[] BannedIds)
+        public async Task<List<Actor>> GetActorsAsync(string name, int[] BannedIds)
         {
             return await db.Actors
-                .Where(actor => BannedIds.Contains(actor.Id) == false && (actor.Name + ' ' + actor.Surname).ToLower()
-                .Contains(name.ToLower()))
+                .Where(actor => BannedIds.Contains(actor.Id) == false && 
+                                (actor.Name + ' ' + actor.Surname)
+                                    .ToLower()
+                                    .Contains(name.ToLower()))
                 .ToListAsync();
         }
-
-        public async Task<List<Actor>> SelectAsync()
-        {
-            return await db.Actors.ToListAsync();
-        }
-        public async Task<Actor> GetLastAsync()
-        {
-            var count = await db.Actors.CountAsync();
-            return db.Actors.Skip(count - 1).First();
-        }
-
 
         public async Task<Actor> UpdateAsync(Actor entity)
         {

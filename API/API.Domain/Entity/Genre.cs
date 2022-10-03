@@ -7,9 +7,9 @@ namespace API.Domain.Entity
 {
     public class Genre
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity), Key]
         public int Id { get; set; }
+        [Required, MaxLength(16)]
         public string Title { get; set; }
 
         [JsonIgnore]

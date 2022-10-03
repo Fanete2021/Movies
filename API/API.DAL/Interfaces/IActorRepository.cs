@@ -6,6 +6,7 @@ namespace API.DAL.Interfaces
 {
     public interface IActorRepository: IBaseRepository<Actor>
     {
-        Task<List<Actor>> GetAsync(string name, int[] BannedIds);
+        Task<List<Actor>> GetActorsAsync(string name, int[] BannedIds);
+        Task<Actor> GetActorAsync(int id);
     }
 }

@@ -17,12 +17,12 @@ namespace API.DAL.Repositories
             this.db = db;
         }
 
-        public async Task<bool> CreateAsync(Movie entity)
+        public async Task<Movie> CreateAsync(Movie entity)
         {
             await db.Movies.AddAsync(entity);
             await db.SaveChangesAsync();
 
-            return true;
+            return entity;
         }
 
         public async Task<bool> DeleteAsync(Movie entity)
@@ -33,7 +33,7 @@ namespace API.DAL.Repositories
             return true;
         }
 
-        public async Task<Movie> GetAsync(int id)
+        public async Task<Movie> GetMovieAsync(int id)
         {
             var movie = await db.Movies.FirstOrDefaultAsync(x => x.Id == id);
             movie.Actors = await db.ActorMovie.Where(am => am.MovieId == id).Select(am => am.Actor).ToListAsync();
@@ -42,11 +42,6 @@ namespace API.DAL.Repositories
             return movie;
         }
 
-        public async Task<Movie> GetLastAsync()
-        {
-            var count = await db.Movies.CountAsync();
-            return db.Movies.Skip(count - 1).First();
-        }
         public async Task<bool> AddGenreAsync(GenreMovie genreMovie)
         {
             await db.GenreMovie.AddAsync(genreMovie);
@@ -63,12 +58,7 @@ namespace API.DAL.Repositories
             return true;
         }
 
-        public async Task<List<Movie>> SelectAsync()
-        {
-            return await db.Movies.ToListAsync();
-        }
-
-        public async Task<List<Movie>> SelectAsync(int[] ActorIds, int[] GenreIds, string title)
+        public async Task<List<Movie>> GetMoviesAsync(int[] ActorIds, int[] GenreIds, string title)
         {
             if (string.IsNullOrEmpty(title))
                 title = "";

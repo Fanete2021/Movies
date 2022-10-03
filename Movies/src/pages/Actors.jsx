@@ -33,35 +33,33 @@ function Actors() {
         const response = await Service.getEntities(APIService, params);
 
         setTotalCountActors(response.headers['x-total-count']);        
-        setTotalPages(getPageCount(response.headers['x-total-count'], limitActors))
+        setTotalPages(getPageCount(response.headers['x-total-count'], limitActors));
 
-        setActors(response.data)
+        setActors(response.data);
     })
 
     useEffect(() => {
-        fetchActors(limitActors, currentPage)
+        fetchActors(limitActors, currentPage);
     }, [])
 
     useEffect(() => {
-        resetView()
-        fetchActors(limitActors, currentPage)
+        resetView();
+        fetchActors(limitActors, currentPage);
     }, [currentPage])
 
-    const createActor = async (newActor) => {
-        await Service.addEntity(newActor, APIService)
-
-        newActor = {
-            ...newActor, id: await Service.getLast(APIService)
+    const createActor = async (actor) => {
+        actor = {
+            ...actor, id: await Service.addEntity(actor, APIService)
         }
 
         setVisibleCreature(false);
         setTotalCountActors(Number(totalCountActors) + 1);
 
         if (actors.length < 10) {
-            setActors([...actors, newActor])
+            setActors([...actors, actor]);
         }
         else if (currentPage === totalPages) {
-            setTotalPages(totalPages + 1)
+            setTotalPages(totalPages + 1);
         }
     }
 
@@ -94,16 +92,14 @@ function Actors() {
     }
 
     const getActorItem = (actor, id) => {
-        return <ActorItem isAuth={isAuth} remove={removeActor} actor={actor} key={id} />
+        return <ActorItem isAuth={isAuth} remove={removeActor} actor={actor} key={Math.random()} />
     }
 
     return (
         <div className="infoBlock">
-            {isAuth &&
-                <Button onClick={() => setVisibleCreature(true)}>
-                    Add
-                </Button>
-            }  
+            <Button disabled={!isAuth} onClick={() => setVisibleCreature(true)}>
+                Add
+            </Button>
 
             {visibleCreature &&
                 <Creator setVisible={setVisibleCreature} >

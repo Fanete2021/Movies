@@ -1,5 +1,5 @@
 ﻿//API connect
-export const server = "https://localhost:44329/";
+export const server = "http://localhost:8001/";
 
-//https://localhost:44329/
-//https://localhost:40001/
+//http://localhost:4000/
+//http://localhost:8001/

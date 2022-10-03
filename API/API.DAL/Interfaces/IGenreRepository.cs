@@ -6,5 +6,6 @@ namespace API.DAL.Interfaces
 {
     public interface IGenreRepository: IBaseRepository<Genre>
     {
+        Task<List<Genre>> GetGenresAsync();
     }
 }

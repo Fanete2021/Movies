@@ -6,10 +6,11 @@ namespace API.Domain.Entity
 {
     public class Movie
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity), Key]
         public int Id { get; set; }
+        [MaxLength(32)]
         public string Title { get; set; }
+        [MaxLength(512)]
         public string Description { get; set; }
         public int PremiereYear { get; set; }
 

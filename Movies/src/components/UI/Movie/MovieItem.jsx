@@ -21,13 +21,11 @@ const MovieItem = function (props) {
                 </div>
             </div>
 
-            {props.isAuth &&
-                <div className={cl.btn}>
-                    <Button onClick={() => props.remove(props.movie)}>
-                        Delete
-                    </Button>
-                </div>
-            }
+            <div className={cl.btn}>
+                <Button disabled={!props.isAuth} onClick={() => props.remove(props.movie)}>
+                    Delete
+                </Button>
+            </div>
         </div>
     );
 };

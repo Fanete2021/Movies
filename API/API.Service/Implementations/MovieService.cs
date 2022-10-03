@@ -14,7 +14,7 @@ namespace API.Service.Implementations
     {
         private readonly IMovieRepository movieRepository;
 
-        public MovieService(IMovieRepository movieRepository, IActorRepository actorRepository, IGenreRepository genreRepository)
+        public MovieService(IMovieRepository movieRepository)
         {
             this.movieRepository = movieRepository;
         }
@@ -24,7 +24,15 @@ namespace API.Service.Implementations
             var baseResponse = new BaseResponce<IEnumerable<Movie>>();
             try
             {
-                var movies = await movieRepository.SelectAsync(ActorsIds, GenreIds, title);
+                var movies = await movieRepository.GetMoviesAsync(ActorsIds, GenreIds, title);
+
+                if (movies == null)
+                {
+                    baseResponse.DescriptionError = "Movies not found";
+                    baseResponse.StatusCode = Domain.Enum.StatusCode.MovieNotFound;
+
+                    return baseResponse;
+                }
 
                 baseResponse.Data = movies.Skip(limit * (page - 1)).Take(limit);
                 baseResponse.TotalCount = movies.Count;
@@ -38,7 +46,7 @@ namespace API.Service.Implementations
                 return new BaseResponce<IEnumerable<Movie>>()
                 {
                     DescriptionError = $"[MovieService.GetMoviesAsync]: {ex.Message}",
-                    StatusCode = Domain.Enum.StatusCode.InternalServerError
+                    StatusCode = Domain.Enum.StatusCode.MovieNotFound
                 };
             }
         }
@@ -49,7 +57,7 @@ namespace API.Service.Implementations
 
             try
             {
-                var movie = await movieRepository.GetAsync(id);
+                var movie = await movieRepository.GetMovieAsync(id);
 
                 if(movie == null)
                 {
@@ -74,39 +82,9 @@ namespace API.Service.Implementations
             }
         }
 
-        public async Task<BaseResponce<Movie>> GetLastAsync()
+        public async Task<BaseResponce<Movie>> CreateAsync(MovieViewModel model)
         {
             var baseResponse = new BaseResponce<Movie>();
-            try
-            {
-                var movie = await movieRepository.GetLastAsync();
-
-                if (movie == null)
-                {
-                    baseResponse.DescriptionError = "Movie not found";
-                    baseResponse.StatusCode = Domain.Enum.StatusCode.MovieNotFound;
-
-                    return baseResponse;
-                }
-
-                baseResponse.Data = movie;
-                baseResponse.StatusCode = Domain.Enum.StatusCode.OK;
-
-                return baseResponse;
-            }
-            catch (Exception ex)
-            {
-                return new BaseResponce<Movie>()
-                {
-                    DescriptionError = $"[MovieService.GetLastAsync]: {ex.Message}",
-                    StatusCode = Domain.Enum.StatusCode.InternalServerError
-                };
-            }
-        }
-
-        public async Task<BaseResponce<MovieViewModel>> CreateAsync(MovieViewModel model)
-        {
-            var baseResponse = new BaseResponce<MovieViewModel>();
 
             try
             {
@@ -117,16 +95,14 @@ namespace API.Service.Implementations
                     PremiereYear = model.PremiereYear,
                 };
 
-                await movieRepository.CreateAsync(movie);
-
-                baseResponse.Data = model;
+                baseResponse.Data = await movieRepository.CreateAsync(movie); ;
                 baseResponse.StatusCode = Domain.Enum.StatusCode.OK;
 
                 return baseResponse;
             }
             catch (Exception ex)
             {
-                return new BaseResponce<MovieViewModel>()
+                return new BaseResponce<Movie>()
                 {
                     DescriptionError = $"[MovieService.CreateAsync]: {ex.Message}",
                     StatusCode = Domain.Enum.StatusCode.DataWithErrors
@@ -156,6 +132,7 @@ namespace API.Service.Implementations
                 };
             }
         }
+
         public async Task<BaseResponce<ActorMovie>> AddActorAsync(ActorMovie actorMovie)
         {
             var baseResponse = new BaseResponce<ActorMovie>();
@@ -185,7 +162,7 @@ namespace API.Service.Implementations
 
             try
             {
-                var movie = await movieRepository.GetAsync(id);
+                var movie = await movieRepository.GetMovieAsync(id);
 
                 if (movie == null)
                 {
@@ -219,7 +196,7 @@ namespace API.Service.Implementations
 
             try
             {
-                var movie = await movieRepository.GetAsync(id);
+                var movie = await movieRepository.GetMovieAsync(id);
 
                 if (movie == null)
                 {

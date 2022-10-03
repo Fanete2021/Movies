@@ -58,5 +58,6 @@ namespace API.DAL
         public DbSet<Genre> Genres { get; set; }
         public DbSet<ActorMovie> ActorMovie { get; set; }
         public DbSet<GenreMovie> GenreMovie { get; set; }
+        public DbSet<User> Users { get; set; }
     }
 }

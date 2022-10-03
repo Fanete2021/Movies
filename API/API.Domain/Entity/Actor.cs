@@ -7,10 +7,11 @@ namespace API.Domain.Entity
 {
     public class Actor
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity), Key]
         public int Id { get; set; }
+        [MaxLength(16)]
         public string Name { get; set; }
+        [MaxLength(16)]
         public string Surname { get; set; }
 
         [JsonIgnore]

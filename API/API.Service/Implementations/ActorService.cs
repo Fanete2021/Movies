@@ -19,74 +19,24 @@ namespace API.Service.Implementations
             this.actorRepository = actorRepository;
         }
 
-        public async Task<BaseResponce<Actor>> GetLastAsync()
-        {
-            var baseResponse = new BaseResponce<Actor>();
-            try
-            {
-                var actor = await actorRepository.GetLastAsync();
-
-                if (actor == null)
-                {
-                    baseResponse.DescriptionError = "Actor not found";
-                    baseResponse.StatusCode = Domain.Enum.StatusCode.ActorNotFound;
-
-                    return baseResponse;
-                }
-
-                baseResponse.Data = actor;
-                baseResponse.StatusCode = Domain.Enum.StatusCode.OK;
-
-                return baseResponse;
-            }
-            catch (Exception ex)
-            {
-                return new BaseResponce<Actor>()
-                {
-                    DescriptionError = $"[ActorService.GetLastAsync]: {ex.Message}",
-                    StatusCode = Domain.Enum.StatusCode.InternalServerError
-                };
-            }
-        }
-
-        public async Task<BaseResponce<Actor>> GetActorAsync(int id)
-        {
-            var baseResponse = new BaseResponce<Actor>();
-
-            try
-            {
-                var actor = await actorRepository.GetAsync(id);
-
-                if(actor == null)
-                {
-                    baseResponse.DescriptionError = "Actor not found";
-                    baseResponse.StatusCode = Domain.Enum.StatusCode.ActorNotFound;
-
-                    return baseResponse;
-                }
-
-                baseResponse.Data = actor;
-                baseResponse.StatusCode = Domain.Enum.StatusCode.OK;
-
-                return baseResponse;
-            }
-            catch(Exception ex)
-            {
-                return new BaseResponce<Actor>()
-                {
-                    DescriptionError = $"[ActorService.GetActorAsync]: {ex.Message}",
-                    StatusCode = Domain.Enum.StatusCode.InternalServerError
-                };
-            }
-        }
-
         public async Task<BaseResponce<IEnumerable<Actor>>> GetActorsAsync(string name, int[] BannedIds, int limit, int page)
         {
             var baseResponse = new BaseResponce<IEnumerable<Actor>>();
 
             try
             {
-                var actors = await actorRepository.GetAsync(name, BannedIds);
+                if (name == null)
+                    name = "";
+
+                var actors = await actorRepository.GetActorsAsync(name, BannedIds);
+
+                if (actors == null)
+                {
+                    baseResponse.DescriptionError = "Actors not found";
+                    baseResponse.StatusCode = Domain.Enum.StatusCode.ActorNotFound;
+
+                    return baseResponse;
+                }
 
                 baseResponse.Data = actors.Skip(limit * (page - 1)).Take(limit);
                 baseResponse.TotalCount = actors.Count;
@@ -105,9 +55,9 @@ namespace API.Service.Implementations
             }
         }
 
-        public async Task<BaseResponce<ActorViewModel>> CreateAsync(ActorViewModel model)
+        public async Task<BaseResponce<Actor>> CreateAsync(ActorViewModel model)
         {
-            var baseResponse = new BaseResponce<ActorViewModel>();
+            var baseResponse = new BaseResponce<Actor>();
 
             try
             {
@@ -117,16 +67,14 @@ namespace API.Service.Implementations
                     Surname = model.Surname,
                 };
 
-                await actorRepository.CreateAsync(actor);
-
-                baseResponse.Data = model;
+                baseResponse.Data = await actorRepository.CreateAsync(actor);
                 baseResponse.StatusCode = Domain.Enum.StatusCode.OK;
 
                 return baseResponse;
             }
             catch (Exception ex)
             {
-                return new BaseResponce<ActorViewModel>()
+                return new BaseResponce<Actor>()
                 {
                     DescriptionError = $"[ActorService.CreateAsync]: {ex.Message}",
                     StatusCode = Domain.Enum.StatusCode.DataWithErrors
@@ -140,7 +88,7 @@ namespace API.Service.Implementations
 
             try
             {
-                var movie = await actorRepository.GetAsync(id);
+                var movie = await actorRepository.GetActorAsync(id);
 
                 if (movie == null)
                 {
@@ -174,7 +122,7 @@ namespace API.Service.Implementations
 
             try
             {
-                var actor = await actorRepository.GetAsync(id);
+                var actor = await actorRepository.GetActorAsync(id);
 
                 if (actor == null)
                 {

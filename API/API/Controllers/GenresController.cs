@@ -1,14 +1,11 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using API.Domain.Entity;
 using API.Service.Interfaces;
-using API.Domain.ViewModels;
 
 namespace API.Controllers
 {
-    [Route("genres")]
-    [ApiController]
+    [ApiController, Route("genres")]
     public class GenresController : ControllerBase
     {
         private readonly IGenreService _genreService;
@@ -18,28 +15,15 @@ namespace API.Controllers
             _genreService = genreService;
         }
 
-
-        // GET: Genres
         [HttpGet]
-        public async Task<ActionResult<Movie>> GetGenres()
+        public async Task<ActionResult<Movie>> GetGenresAsync()
         {
             var response = await _genreService.GetGenresAsync();
 
             if(response.StatusCode == Domain.Enum.StatusCode.OK)
-                return this.Ok(response.Data);
+                return Ok(response.Data);
 
-            return this.NotFound(response.DescriptionError);
-        }
-
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Movie>> GetMovie(int id)
-        {
-            var response = await _genreService.GetGenreAsync(id);
-
-            if (response.StatusCode == Domain.Enum.StatusCode.OK)
-                return this.Ok(response.Data);
-
-            return this.NotFound(response.DescriptionError);
+            return NotFound(response.DescriptionError);
         }
     }
 }

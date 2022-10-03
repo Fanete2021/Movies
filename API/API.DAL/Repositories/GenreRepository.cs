@@ -16,12 +16,12 @@ namespace API.DAL.Repositories
             this.db = db;
         }
 
-        public async Task<bool> CreateAsync(Genre entity)
+        public async Task<Genre> CreateAsync(Genre entity)
         {
             await db.Genres.AddAsync(entity);
-            await db.SaveChangesAsync();
+            entity.Id = await db.SaveChangesAsync();
 
-            return true;
+            return entity;
         }
 
         public async Task<bool> DeleteAsync(Genre entity)
@@ -32,24 +32,9 @@ namespace API.DAL.Repositories
             return true;
         }
 
-        public async Task<Genre> GetAsync(int id)
-        {
-            return await db.Genres.FirstOrDefaultAsync(x => x.Id == id);
-        }
-
-        public async Task<List<Genre>> SelectAsync()
+        public async Task<List<Genre>> GetGenresAsync()
         {
             return await db.Genres.ToListAsync();
-        }
-
-        public async Task<List<Genre>> SelectAsync(int limit, int page)
-        {
-            return await db.Genres.Skip(limit * (page - 1)).Take(limit).ToListAsync();
-        }
-
-        public async Task<Genre> GetLastAsync()
-        {
-            return await db.Genres.LastAsync();
         }
 
         public async Task<Genre> UpdateAsync(Genre entity)

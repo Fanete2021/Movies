@@ -1,7 +1,4 @@
 ﻿.search {
-    position: absolute;
-    top: 90px;
-    left: 1vw;
     width: 25vw;
     background-color: white;
     border-radius: 8px;
@@ -18,4 +15,8 @@
     text-align: center;
     margin: 10px 0;
     font-size: 20px;
+}
+
+Input {
+    margin: 10px 0;
 }

@@ -1,17 +1,20 @@
+$user: '../img/user.png';
+$password: '../img/key1.png';
+$repeatedPassword: '../img/key2.png';
+
 .login {
-    width: 30vw;
+    min-width: 30vw;
     margin: 100px 35vw 0;
     box-shadow: 0 0 0 1px rgba(0,0,0,0.1);
     border-radius: 8px;
     background-color: white;
-    height: 22vw;
+    min-height: 15vw;
     display: flex;
     flex-direction: column;
-    position: relative;
 }
 
 .login__choice {
-    margin: 20px 25%;
+    margin: 20px 25% 5px;
 
     span {
         margin: 0 20px;
@@ -27,12 +30,49 @@
 }
 
 form {
-    margin: 0 20%;
+    margin: 10px 15% 0 10%;
 
     Button {
-        position: absolute;
-        margin: 0 12.5% 5px;
+        margin: 10px 30% 5px;
         width: 10vw;
         bottom: 15px;
+    }
+
+    .error, .submitError {
+        color: red;
+        font-size: 15px;
+        text-align: center;
+    }
+
+    .submitError {
+        margin: 0 0px 20px;
+        text-align: center;
+    }
+}
+
+.field {
+    display: flex;
+    flex-flow: row;
+    width: 100%;
+
+    div {
+        flex-basis: 20%;
+    }
+
+    .inp {
+        margin: 0 0 10px;
+        flex-basis: 80%;
+    }
+
+    .user {
+        background: url($user) center center no-repeat;
+    }
+
+    .password {
+        background: url($password) center center no-repeat;
+    }
+
+    .repeatedPassword {
+        background: url($repeatedPassword) center center no-repeat;
     }
 }

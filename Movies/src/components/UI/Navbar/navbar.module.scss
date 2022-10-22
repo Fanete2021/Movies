@@ -9,6 +9,10 @@ a {
         right: 15px;
         cursor: pointer;
     }
+
+    &:hover {
+        color: rgb(0, 0, 0);
+    }
 }
 
 .navbar {

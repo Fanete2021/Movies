@@ -1,4 +1,4 @@
-﻿import React, { useContext, useState } from 'react';
+﻿﻿import React, { useContext, useState } from 'react';
 import { Context } from '../../../context';
 import Button from '../Button/Button';
 import Input from '../Input/Input';
@@ -8,54 +8,86 @@ import { useEffect } from 'react';
 import cl from './movie.module.scss';
 import useInput from '../../../hooks/useInput';
 
-const MovieForm = function ({ create }) {
+const MovieForm = function ({ ...parameters }) {
+    const typeParameters = typeof(parameters.changeableMovie) !== 'undefined';
     const { genres } = useContext(Context);
     const [disabled, setDisabled]  = useState(true);
-    const title = useInput('', {length: {min: 5, max: 32}});
-    const description = useInput('', {length: {min: 16, max: 512}});
-    const premiereYear = useInput('2022', {range: {min: 1895, max: 2030}});
-    const [movie, setMovie] = useState({ title: "", description: "", 
-                                         premiereYear: "", genres: [], actors: [] });
+    const count = useInput('1', {range: {min: 1, max: 100}});
+    const title = useInput(typeParameters
+                            ? parameters.changeableMovie.title
+                            : '' 
+                            ,{length: {min: 5, max: 32}});
+    const description = useInput(typeParameters
+                            ? parameters.changeableMovie.description
+                            : '' 
+                            ,{length: {min: 16, max: 512}});
+    const premiereYear = useInput(typeParameters
+                            ? parameters.changeableMovie.premiereYear
+                            : '2022'
+                            ,{range: {min: 1895, max: 2030}});
+    const [selectedGenres, setSelectedGenres] = useState(typeParameters 
+                                                        ? parameters.changeableMovie.genres : []);
+    const [selectedActors, setSelectedActors] = useState(typeParameters 
+                                                        ? parameters.changeableMovie.actors : []);
 
-    async function addNewMovie(e){
+    async function addNewMovie(e) {
         e.preventDefault();
-        create(movie);
+        
+        let movie = {
+            title: title.value,
+            description: description.value,
+            premiereYear: parseInt(premiereYear.value),
+            genres: selectedGenres,
+            actors: selectedActors
+        };
+
+        parameters.create(movie, parseInt(count.value));
+    }
+
+    async function changeMovie(e) {
+        e.preventDefault();
+
+        let movie = {
+            title: title.value,
+            description: description.value,
+            premiereYear: parseInt(premiereYear.value),
+            genres: selectedGenres,
+            actors: selectedActors,
+            id: parameters.changeableMovie.id
+        };
+
+        parameters.change(movie);
     }
 
     useEffect(() => {
         setDisabled(false);
 
-        for (let key in movie) {
-            if (movie[key].length === 0)
-            {
-                setDisabled(true);
-                break;
-            }
+        if (selectedGenres.length === 0 || selectedActors.length === 0)
+        {
+            setDisabled(true);
         }
 
-        if (title.error || description.error || premiereYear.error)
+        if (title.error || description.error || premiereYear.error || count.error)
+        {
             setDisabled(true);
-    }, [movie])
+        }
+    }, [title.error, description.error, premiereYear.error, selectedGenres, selectedActors])
 
-    useEffect(() => {
-        setMovie({...movie, title: title.value, description: description.value, premiereYear: parseInt(premiereYear.value)});
-    }, [title.value, description.value, premiereYear.value])
-
-    const changeGenres = (e, genre) => {
+    const setGenres = (e, genre) => {
         if (e.target.checked) {
-            setMovie({ ...movie, genres: [...movie.genres, genre]});
+            setSelectedGenres([...selectedGenres, genre]);
         }
         else {
-            setMovie({ ...movie, genres: movie.genres.filter(g => g.id !== genre.id)});
+            setSelectedGenres(selectedGenres.filter(g => g.id !== genre.id));
         }
     }
 
     const addActor = (actor) => {
-        setMovie({ ...movie, actors: [...movie.actors, actor]});
+        setSelectedActors([...selectedActors, actor]);
     }
 
     const deleteActor = (actor) => {
-        setMovie({ ...movie, actors: movie.actors.filter(a => a.id !== actor.id)});
+        setSelectedActors(selectedActors.filter(a => a.id !== actor.id));
     }
 
     return (
@@ -87,11 +119,29 @@ const MovieForm = function ({ create }) {
                 placeholder="Premiere Year"
             />
 
-            <GenresSelector genres={genres} changeArray={changeGenres}/>
+            {parameters.type === "create" &&
+                <div>
+                     {(count.isDirty && count.error) && <div className={cl.error}>{count.error}</div>}
+                    <Input
+                        value={count.value}
+                        onChange={e => count.onChange(e)}
+                        onBlur={e => count.onBlur(e)}
+                        type="number"
+                        placeholder="Number of copies"
+                    />
+                </div>
+            }
 
-            <ActorSelector addActor={addActor} deleteActor={deleteActor} selectedActors={movie.actors} />
+            <GenresSelector genres={genres} setGenres={setGenres} initialVisibility={true} selectedGenres={selectedGenres}/>
 
-            <Button disabled={disabled} onClick={addNewMovie}>Add</Button>
+            <ActorSelector addActor={addActor} deleteActor={deleteActor} selectedActors={selectedActors} />
+
+            {parameters.type === "create" 
+                ?
+                <Button disabled={disabled} onClick={addNewMovie}>Add</Button>
+                :
+                <Button disabled={disabled} onClick={changeMovie}>Change</Button>
+            }
         </div>
     );
 };

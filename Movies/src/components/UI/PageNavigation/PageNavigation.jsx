@@ -3,6 +3,10 @@ import { useMemo } from 'react';
 import cl from './pageNavigation.module.scss';
 
 const PageNavigation = ({ totalPages, isLoading, currentPage, changePage}) => {
+    const maxCountPages = 9;
+    const changePageDoubleArrow = 9;
+    const changePageArrow = 1;
+
     const arrowsClasses = useMemo( () => {
         let arrowsClasses = [cl.navigation__dPrev, cl.navigation__prev, cl.navigation__next, cl.navigation__dNext];
 
@@ -23,16 +27,17 @@ const PageNavigation = ({ totalPages, isLoading, currentPage, changePage}) => {
 
     const pages = useMemo(() => {
         let pages = [];
-        var beginningPage = 1;
-    
-        if (currentPage > 4)
-            beginningPage = currentPage - 4;
-
-        if (currentPage > 4 && currentPage + 4 > totalPages)
-            beginningPage = beginningPage + totalPages - currentPage - 4;
+        let beginningPage = (totalPages > 9 && currentPage > maxCountPages / 2) ? currentPage - Math.floor(maxCountPages / 2) : 1;
         
-        for(; beginningPage <= totalPages && pages.length < 9; ++beginningPage)
-                pages.push(beginningPage);
+        if (totalPages > 9 && currentPage + maxCountPages / 2 > totalPages)
+        {
+            beginningPage = beginningPage + totalPages - currentPage - Math.floor(maxCountPages / 2);
+        }
+
+        for(; beginningPage <= totalPages && pages.length < maxCountPages; ++beginningPage)
+        {
+            pages.push(beginningPage);
+        }
 
         return pages;
     }, [totalPages, currentPage]);
@@ -41,8 +46,8 @@ const PageNavigation = ({ totalPages, isLoading, currentPage, changePage}) => {
         <div>
             {(!isLoading) &&
                 <div className={cl.navigation}>
-                    <div className={arrowsClasses[0]} onClick={() => changePage(currentPage - 15)}></div>
-                    <div className={arrowsClasses[1]} onClick={() => changePage(currentPage - 1)}></div>
+                    <div className={arrowsClasses[0]} onClick={() => changePage(currentPage - changePageDoubleArrow)}></div>
+                    <div className={arrowsClasses[1]} onClick={() => changePage(currentPage - changePageArrow)}></div>
 
                     <div className={cl.navigation__pages}>
                         {pages.map(page =>
@@ -51,7 +56,7 @@ const PageNavigation = ({ totalPages, isLoading, currentPage, changePage}) => {
                                 return (
                                     <div className={`${cl.navigation__numberPage} ${cl.navigation__currentPage}`}
                                         onClick={() => changePage(page)}
-                                        key={page + Math.random()}>
+                                        key={"page" + page}>
                                         {page}
                                     </div>
                                 )
@@ -59,7 +64,7 @@ const PageNavigation = ({ totalPages, isLoading, currentPage, changePage}) => {
                             return (
                                 <div className={cl.navigation__numberPage}
                                     onClick={() => changePage(page)}
-                                    key={page + Math.random()}>
+                                    key={"page" + page}>
                                     {page}
                                 </div>
                             )
@@ -67,8 +72,8 @@ const PageNavigation = ({ totalPages, isLoading, currentPage, changePage}) => {
                         )}
                     </div>
 
-                    <div className={arrowsClasses[2]} onClick={() => changePage(currentPage + 1)}></div>
-                    <div className={arrowsClasses[3]} onClick={() => changePage(currentPage + 10)}></div>
+                    <div className={arrowsClasses[2]} onClick={() => changePage(currentPage + changePageArrow)}></div>
+                    <div className={arrowsClasses[3]} onClick={() => changePage(currentPage + changePageDoubleArrow)}></div>
                 </div>
             }
         </div>

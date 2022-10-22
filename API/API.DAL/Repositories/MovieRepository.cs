@@ -4,7 +4,7 @@ using API.Domain.Entity;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
-using System;
+using API.Domain.ViewModels;
 
 namespace API.DAL.Repositories
 {
@@ -17,12 +17,40 @@ namespace API.DAL.Repositories
             this.db = db;
         }
 
-        public async Task<Movie> CreateAsync(Movie entity)
+        public async Task<Movie> CreateAsync(MovieViewModel model)
         {
-            await db.Movies.AddAsync(entity);
+            var movie = new Movie()
+            {
+                Title = model.Title,
+                Description = model.Description,
+                PremiereYear = model.PremiereYear
+            };
+            await db.Movies.AddAsync(movie);
             await db.SaveChangesAsync();
 
-            return entity;
+            foreach (var genre in model.Genres)
+            {
+                var genreMovie = new GenreMovie()
+                {
+                    GenreId = genre.Id,
+                    MovieId = movie.Id
+                };
+                await db.GenreMovie.AddAsync(genreMovie);
+            }
+
+            foreach (var actor in model.Actors)
+            {
+                var actorMovie = new ActorMovie()
+                {
+                    ActorId = actor.Id,
+                    MovieId = movie.Id
+                };
+                await db.ActorMovie.AddAsync(actorMovie);
+            }
+
+            await db.SaveChangesAsync();
+
+            return movie;
         }
 
         public async Task<bool> DeleteAsync(Movie entity)
@@ -42,47 +70,87 @@ namespace API.DAL.Repositories
             return movie;
         }
 
-        public async Task<bool> AddGenreAsync(GenreMovie genreMovie)
-        {
-            await db.GenreMovie.AddAsync(genreMovie);
-            await db.SaveChangesAsync();
-
-            return true;
-        }
-
-        public async Task<bool> AddActorAsync(ActorMovie actorMovie)
-        {
-            await db.ActorMovie.AddAsync(actorMovie);
-            await db.SaveChangesAsync();
-
-            return true;
-        }
-
-        public async Task<List<Movie>> GetMoviesAsync(int[] ActorIds, int[] GenreIds, string title)
+        public async Task<List<Movie>> GetMoviesAsync(int[] actorIds, int[] genreIds, string title, int minPremiereYear, int maxPremiereYear)
         {
             if (string.IsNullOrEmpty(title))
                 title = "";
 
             var movies = await db.Movies
-                                .Where(movie => movie.Title.ToLower().Contains(title.ToLower()))
+                                .Where(m => m.Title.ToLower().Contains(title.ToLower()))
+                                .Where(m => m.PremiereYear >= minPremiereYear && m.PremiereYear <= maxPremiereYear)
                                 .Include(m => m.Actors)
                                 .Include(m => m.Genres)
                                 .ToListAsync();
 
             var sortedMovies = movies
-                                .Where(m => ActorIds.Length == 0 || ActorIds.All(ai => m.Actors.Any(a => a.Id == ai)))
-                                .Where(m => GenreIds.Length == 0 || GenreIds.All(gi => m.Genres.Any(g => g.Id == gi)))
+                                .Where(m => actorIds.Length == 0 || actorIds.All(ai => m.Actors.Any(a => a.Id == ai)))
+                                .Where(m => genreIds.Length == 0 || genreIds.All(gi => m.Genres.Any(g => g.Id == gi)))
                                 .ToList();
 
             return sortedMovies;
         }
 
-        public async Task<Movie> UpdateAsync(Movie entity)
+        public async Task<bool> UpdateAsync(int id, MovieViewModel model)
         {
-            db.Movies.Update(entity);
+            var movie = await GetMovieAsync(id);
+
+            if (movie == null)
+            {
+                return false;
+            }
+
+            movie.Title = model.Title;
+            movie.Description = model.Description;
+            movie.PremiereYear = model.PremiereYear;
+            db.Entry(movie).State = EntityState.Modified;
+
+            var addedGenres = model.Genres
+                            .Where(g => movie.Genres.FindIndex(mg => mg.Id == g.Id) == -1)
+                            .ToList();
+            foreach (var genre in addedGenres)
+            {
+                var genreMovie = new GenreMovie()
+                {
+                    GenreId = genre.Id,
+                    MovieId = id
+                };
+                await db.GenreMovie.AddAsync(genreMovie);
+            }
+
+            var deletedGenres = movie.Genres
+                            .Where(g => model.Genres.FindIndex(mg => mg.Id == g.Id) == -1)
+                            .ToList();
+            foreach (var genre in deletedGenres)
+            {
+                var genreMovie = db.GenreMovie.Where(gm => gm.GenreId == genre.Id && gm.MovieId == id);
+                db.GenreMovie.RemoveRange(genreMovie);
+            }
+
+            var addedActors = model.Actors
+                            .Where(a => movie.Actors.FindIndex(ma => ma.Id == a.Id) == -1)
+                            .ToList();
+            foreach (var actor in addedActors)
+            {
+                var actorMovie = new ActorMovie()
+                {
+                    ActorId = actor.Id,
+                    MovieId = id
+                };
+                await db.ActorMovie.AddAsync(actorMovie);
+            }
+
+            var deletedActors = movie.Actors
+                            .Where(a => model.Genres.FindIndex(ma => ma.Id == a.Id) == -1)
+                            .ToList();
+            foreach (var actor in deletedActors)
+            {
+                var actorMovie = db.ActorMovie.Where(gm => gm.ActorId == actor.Id && gm.MovieId == id);
+                db.ActorMovie.RemoveRange(actorMovie);
+            }
+
             await db.SaveChangesAsync();
 
-            return entity;
+            return true;
         }
     }
 }

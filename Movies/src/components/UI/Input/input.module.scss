@@ -11,6 +11,10 @@
         border: 1px solid transparent;
         transform-origin: 0 0;
         transition: color .15s ease-in-out, transform .15s ease-in-out;
+
+        @media (max-width: 800px) {
+            padding: 0.5rem .75rem;
+        }
     }
 
     .inp {
@@ -28,6 +32,11 @@
         font-size: 16px;
         font-weight: 400;
         background-clip: padding-box;
+
+        @media (max-width: 800px) {
+            height: 30px;
+            font-size: 14px;
+        }
     
         &:focus {
             outline: 0;

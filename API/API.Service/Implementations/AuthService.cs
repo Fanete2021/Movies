@@ -1,6 +1,6 @@
 ﻿using API.DAL.Interfaces;
 using API.Domain.Entity;
-using API.Domain.Responce;
+using API.Domain.Response;
 using API.Domain.ViewModels;
 using API.Service.Interfaces;
 using System;
@@ -18,9 +18,9 @@ namespace API.Service.Implementations
             this.userRepository = userRepository;
         }
 
-        public async Task<BaseResponce<User>> CreateAsync(RegisterViewModel model)
+        public async Task<BaseResponse<User>> CreateAsync(RegisterViewModel model)
         {
-            var baseResponse = new BaseResponce<User>();
+            var baseResponse = new BaseResponse<User>();
 
             try
             {
@@ -40,7 +40,7 @@ namespace API.Service.Implementations
             }
             catch (Exception ex)
             {
-                return new BaseResponce<User>()
+                return new BaseResponse<User>()
                 {
                     DescriptionError = $"[AuthService.CreateAsync]: {ex.Message}",
                     StatusCode = Domain.Enum.StatusCode.RegexNotMatch
@@ -48,9 +48,9 @@ namespace API.Service.Implementations
             }
         }
 
-        public async Task<BaseResponce<User>> GetUserAsync(LoginViewModel model)
+        public async Task<BaseResponse<User>> GetUserAsync(LoginViewModel model)
         {
-            var baseResponse = new BaseResponce<User>();
+            var baseResponse = new BaseResponse<User>();
 
             try
             {
@@ -79,7 +79,7 @@ namespace API.Service.Implementations
             }
             catch (Exception ex)
             {
-                return new BaseResponce<User>()
+                return new BaseResponse<User>()
                 {
                     DescriptionError = $"[AuthService.GetUserAsync]: {ex.Message}",
                     StatusCode = Domain.Enum.StatusCode.InternalServerError
@@ -87,9 +87,9 @@ namespace API.Service.Implementations
             }
         }
 
-        public async Task<BaseResponce<User>> GetByLoginAsync(string login)
+        public async Task<BaseResponse<User>> GetByLoginAsync(string login)
         {
-            var baseResponse = new BaseResponce<User>();
+            var baseResponse = new BaseResponse<User>();
 
             try
             {
@@ -110,7 +110,7 @@ namespace API.Service.Implementations
             }
             catch (Exception ex)
             {
-                return new BaseResponce<User>()
+                return new BaseResponse<User>()
                 {
                     DescriptionError = $"[AuthService.GetByLoginAsync]: {ex.Message}",
                     StatusCode = Domain.Enum.StatusCode.InternalServerError

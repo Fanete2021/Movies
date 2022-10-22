@@ -4,6 +4,7 @@ using API.Domain.Entity;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
+using API.Domain.ViewModels;
 
 namespace API.DAL.Repositories
 {
@@ -16,17 +17,17 @@ namespace API.DAL.Repositories
             this.db = db;
         }
 
-        public async Task<Actor> CreateAsync(Actor entity)
+        public async Task<Actor> CreateAsync(Actor actor)
         {
-            await db.Actors.AddAsync(entity);
+            await db.Actors.AddAsync(actor);
             await db.SaveChangesAsync();
 
-            return entity;
+            return actor;
         }
 
-        public async Task<bool> DeleteAsync(Actor entity)
+        public async Task<bool> DeleteAsync(Actor actor)
         {
-            db.Actors.Remove(entity);
+            db.Actors.Remove(actor);
             await db.SaveChangesAsync();
 
             return true;
@@ -37,22 +38,32 @@ namespace API.DAL.Repositories
             return await db.Actors.FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public async Task<List<Actor>> GetActorsAsync(string name, int[] BannedIds)
+        public async Task<List<Actor>> GetActorsAsync(int[] bannedIds, string name)
         {
             return await db.Actors
-                .Where(actor => BannedIds.Contains(actor.Id) == false && 
+                .Where(actor => bannedIds.Contains(actor.Id) == false && 
                                 (actor.Name + ' ' + actor.Surname)
                                     .ToLower()
                                     .Contains(name.ToLower()))
                 .ToListAsync();
         }
 
-        public async Task<Actor> UpdateAsync(Actor entity)
+        public async Task<bool> UpdateAsync(int id, ActorViewModel model)
         {
-            db.Actors.Update(entity);
+            var actor = await GetActorAsync(id);
+
+            if (actor == null)
+            {
+                return false;
+            }
+
+            actor.Name = model.Name;
+            actor.Surname = model.Surname;
+
+            db.Entry(actor).State = EntityState.Modified;
             await db.SaveChangesAsync();
 
-            return entity;
+            return true;
         }
     }
 }

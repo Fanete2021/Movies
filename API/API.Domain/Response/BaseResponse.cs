@@ -1,8 +1,8 @@
 ﻿using API.Domain.Enum;
 
-namespace API.Domain.Responce
+namespace API.Domain.Response
 {
-    public class BaseResponce<T>
+    public class BaseResponse<T>
     {
         public string DescriptionError { get; set; }
 

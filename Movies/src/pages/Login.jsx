@@ -84,11 +84,13 @@ function Login() {
                 ?
                 <div className={cl.login__choice}>
                     <span className={cl.activeSpan}>Log in</span>
+                    <span className={cl.separator}></span>
                     <span onClick={changeMenu}>Sign up</span>
                 </div>
                 :
                 <div className={cl.login__choice}>
                     <span onClick={changeMenu}>Log in</span>
+                    <span className={cl.separator}></span>
                     <span className={cl.activeSpan}>Sign up</span>
                 </div>
             }

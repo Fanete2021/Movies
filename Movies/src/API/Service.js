@@ -8,6 +8,10 @@ export default class Service {
         await axios.delete(server + service + '/' + id);
     }
 
+    static async changeEntity(entity, service) {
+        await axios.post(server + service + '/' + entity.id, entity);
+    }
+
     static async addEntity(entity, service) {
         const response = await axios.post(server + service, entity);
 
@@ -19,7 +23,7 @@ export default class Service {
             params: params,
             paramsSerializer: objectToQueryString
         });
-
+        
         return response;
     }
 

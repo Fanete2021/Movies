@@ -1,9 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using API.DAL.Interfaces;
 using API.Domain.Entity;
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Linq;
 
 namespace API.DAL.Repositories
 {
@@ -16,28 +14,20 @@ namespace API.DAL.Repositories
             this.db = db;
         }
 
-        public async Task<User> CreateAsync(User entity)
+        public async Task<User> CreateAsync(User user)
         {
-            await db.Users.AddAsync(entity);
+            await db.Users.AddAsync(user);
             await db.SaveChangesAsync();
 
-            return entity;
+            return user;
         }
 
-        public async Task<bool> DeleteAsync(User entity)
+        public async Task<bool> DeleteAsync(User user)
         {
-            db.Users.Remove(entity);
+            db.Users.Remove(user);
             await db.SaveChangesAsync();
 
             return true;
-        }
-
-        public async Task<User> UpdateAsync(User entity)
-        {
-            db.Users.Update(entity);
-            await db.SaveChangesAsync();
-
-            return entity;
         }
 
         public async Task<User> GetByLoginAsync(string login)

@@ -15,16 +15,19 @@ import MovieItem from '../components/UI/Movie/MovieItem';
 import List from '../components/UI/List/List';
 import { useContext } from 'react';
 import { Context } from '../context';
+import { sleep } from '../utils/sleep';
 
 
 function Movies() {
-    const [movies, setMovies] = useState([])
-    const [totalPages, setTotalPages] = useState(0)
-    const [limitMovies, setLimitMovies] = useState(10)
-    const [currentPage, setCurrentPage] = useState(1)
-    const [filter, setFilter] = useState({ title: '', genres: [], actors: [] });
+    const [movies, setMovies] = useState([]);
+    const [changeableMovie, setChangeableMovie] = useState();
+    const [totalPages, setTotalPages] = useState(1);
+    const [limitMovies, setLimitMovies] = useState(10);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [filter, setFilter] = useState({ title: '', genres: [], actors: [], minPremiereYear: 1895, maxPremiereYear: 2030 });
     const debouncedFilter = useDebounce(filter, 1000); //Processing the request after 1s
-    const [visibleCreature, setVisibleCreature] = useState(false);
+    const [visibleForm, setVisibleForm] = useState(false);
+    const [typeForm, setTypeForm] = useState("create");
     const [totalCountMovies, setTotalCountMovies] = useState(0);
     const APIService = 'movies';
     const {isAuth} = useContext(Context);
@@ -37,102 +40,147 @@ function Movies() {
             ActorIds: filter.actors.map(a => a.id),
             GenreIds: filter.genres.map(g => g.id),
             limit: limit,
-            page: page
+            page: page,
+            minPremiereYear: filter.minPremiereYear,
+            maxPremiereYear: filter.maxPremiereYear,
         };
 
         const response =  await Service.getEntities(APIService, params);
 
         setTotalCountMovies(response.headers['x-total-count']);
         setTotalPages(getPageCount(response.headers['x-total-count'], limitMovies));
-
+        
         setMovies(response.data);
     })
-    
-    const resetView = () => {
-        window.scrollTo(0, 0);
-    }
 
     //When the page starts, we load the movies
     useEffect(() => {
-        fetchMovies(limitMovies, currentPage)
+        fetchMovies(limitMovies, 1);
     }, [])
 
     //When changing the page or the interval between the filter,
     useEffect(() => {
-        resetView()
-        fetchMovies(limitMovies, currentPage)
-    }, [debouncedFilter, currentPage])
+        fetchMovies(limitMovies, 1);
+    }, [debouncedFilter])
 
-    //When changing the filter, we return to the first page
-    useEffect(() => {
-        changePage(1)
-    }, [filter])
-
-    const createMovie = async (movie) => {
-        movie = {
-            ...movie, id: await Service.addEntity(movie, APIService)
+    const createMovie = async (movie, count) => {
+        if(totalPages === 0)
+        {
+            setTotalPages(1);
         }
-        
-        movie.genres.map(genre => Service.addDependencies(APIService, "genres",{MovieId: movie.id, GenreId: genre.id}))
-        movie.actors.map(actor => Service.addDependencies(APIService, "actors", {MovieId: movie.id, ActorId: actor.id}))
 
-        setVisibleCreature(false);
-        setTotalCountMovies(Number(totalCountMovies) + 1);
+        let newMovies = [];
 
-        if (movies.length < 10) {
-            //Checking for a match with the filter
-            if (contains(movie.genres.map(g => g.id), filter.genres.map(g => g.id)) &&
-                contains(movie.actors.map(a => a.id), filter.actors.map(a => a.id)) &&
-                movie.title.toLowerCase().includes(filter.title.toLowerCase()))
-            {
-                setMovies([...movies, movie])
+        for(let iter = 0; iter < count; ++iter)
+        {
+            movie = {
+                ...movie, id: await Service.addEntity(movie, APIService)
             }
-        } else if (currentPage === totalPages) {
-            setTotalPages(totalPages + 1)
+
+            setVisibleForm(false);
+            setTotalCountMovies(Number(totalCountMovies) + count);
+
+            if (movies.length + iter + 1 < 10) {
+                //Checking for a match with the filter
+                if (contains(movie.genres.map(g => g.id), filter.genres.map(g => g.id)) &&
+                    contains(movie.actors.map(a => a.id), filter.actors.map(a => a.id)) &&
+                    movie.title.toLowerCase().includes(filter.title.toLowerCase()))
+                {
+                    newMovies.push(movie);
+                }
+            }
         }
+
+        setMovies([...movies, ...newMovies])
+        setTotalPages(getPageCount(parseInt(totalCountMovies) + count, limitMovies));
+    }
+
+    const changeMovie = async (movie) => {    
+        setVisibleForm(false);
+        await Service.changeEntity(movie, APIService);
+
+        let indexMovie = movies.findIndex(m => m.id === movie.id);
+        setMovies([...movies, movies[indexMovie] = movie]);
     }
 
     const removeMovie = async (movie) => {
-        await Service.deleteEntity(movie.id, APIService)
-        let offset = 0
+        await Service.deleteEntity(movie.id, APIService);
+        
+        setTotalCountMovies(totalCountMovies - 1);
+        let filterMovies = movies.filter(m => m.id !== movie.id);
 
-        if (currentPage !== 1 && movies.length === 1) {
-            offset = 1
-            setCurrentPage(currentPage - 1)
+        setMovies(filterMovies);
+
+        if (currentPage !== totalPages)
+        {
+            let params = {
+                title: filter.title,
+                ActorIds: filter.actors.map(a => a.id),
+                GenreIds: filter.genres.map(g => g.id),
+                limit: 1,
+                page: currentPage * 10
+            };
+
+            const response =  await Service.getEntities(APIService, params);
+            filterMovies = [...filterMovies, ...response.data];
+
+            sleep(400);
+            setMovies(filterMovies);
         }
+        
 
-        fetchMovies(limitMovies, currentPage - offset)
+        if ((totalCountMovies - 1) % 10 === 0)
+            setTotalPages(totalPages - 1);
+
+        if (currentPage !== 1 && movies.length === 1) 
+        {
+            setCurrentPage(currentPage - 1);
+            fetchMovies(limitMovies, currentPage - 1);
+        }
     }
         
-    const changePage = (newPage) => {
-        resetView();
-
-        if (newPage < 1)
-            setCurrentPage(1); 
-        else if (newPage > totalPages && totalPages > 0)
+    const changePage = (page) => {
+        if (page < 1)
+        {
+            setCurrentPage(1);
+            fetchMovies(limitMovies, 1);
+        }
+        else if (page > totalPages)
+        {
             setCurrentPage(totalPages);
-        else {
-            setCurrentPage(newPage);
+            fetchMovies(limitMovies, totalPages);
+        }
+        else 
+        {
+            setCurrentPage(page);
+            fetchMovies(limitMovies, page);
         }
     }
-
-    const getMovieItem = (movie, id) => {
-        return <MovieItem remove={removeMovie} movie={movie} key={id} isAuth={isAuth} />
+    
+    const changeStateForm = (type) => {
+        setVisibleForm(true); 
+        setTypeForm(type);
     }
 
+    const getMovieItem = (movie) => {
+        return <MovieItem remove={removeMovie} movie={movie} isAuth={isAuth}
+                          changeStateForm={changeStateForm} setChangeableMovie={setChangeableMovie}/>
+    }
+
+
     return (
-        <div className="infoBlock">
+        <div className="movies">
             <div className="filter">
                 <MovieFilter filter={filter} setFilter={setFilter}/>
             </div>
 
-            <Button disabled={!isAuth} onClick={() => setVisibleCreature(true)}>
+            <Button disabled={!isAuth} onClick={() => {changeStateForm("create"); setChangeableMovie();}}>
                 Add
             </Button>
 
-            {visibleCreature &&
-                <Creator setVisible={setVisibleCreature}>
-                    <MovieForm create={createMovie} />
+            {visibleForm &&
+                <Creator setVisible={setVisibleForm}>
+                    <MovieForm create={createMovie} change={changeMovie} type={typeForm} changeableMovie={changeableMovie}/>
                 </Creator>
             }
 
@@ -143,15 +191,17 @@ function Movies() {
                 <div className="loader"><Loader /></div>
                 :
                 <div>
-                    <List countEntities={totalCountMovies} isEntitiesLoading={isMovieLoading} entities={movies} title="List of Movies" getItem={getMovieItem} />
-                    {totalCountMovies > 0 && 
-                        <PageNavigation totalPages={totalPages} isLoading={isMovieLoading} currentPage={currentPage} changePage={changePage} />
+                    <List countEntities={totalCountMovies} isEntitiesLoading={isMovieLoading} 
+                          entities={movies} title="List of Movies" getItem={getMovieItem}/>
+
+                    {movies.length > 0 && 
+                        <PageNavigation totalPages={totalPages} isLoading={isMovieLoading} 
+                                        currentPage={currentPage} changePage={changePage} />
                     }
                 </div>
             }
         </div>
     );
 }
-
 
 export default Movies;

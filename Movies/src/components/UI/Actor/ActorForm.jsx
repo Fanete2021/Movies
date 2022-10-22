@@ -5,35 +5,47 @@ import Button from '../Button/Button';
 import Input from '../Input/Input';
 import cl from './actor.module.scss';
 
-const ActorForm = function ({ create }) {
-    const [actor, setActor] = useState({ name: '', surname: ''});
+const ActorForm = function ({ ...parameters }) {
+    const typeParameters = typeof(parameters.changeableActor) !== 'undefined';
     const [disabled, setDisabled] = useState(true);
-    const name = useInput('', {length: {min: 2, max: 16}, regex: /^[a-zA-Zа-яА-Я'][a-zA-Zа-яА-Я-' ]+[a-zA-Zа-яА-Я']?$/u});
-    const surname = useInput('', {length: {min: 2, max: 16}, regex: /^[a-zA-Zа-яА-Я'][a-zA-Zа-яА-Я-' ]+[a-zA-Zа-яА-Я']?$/u});
+    const name = useInput(typeParameters
+                        ? parameters.changeableActor.name
+                        : ''
+                        , {length: {min: 2, max: 16}, regex: /^[a-zA-Zа-яА-Я'][a-zA-Zа-яА-Я-' ]+[a-zA-Zа-яА-Я']?$/u});
+    const surname = useInput(typeParameters
+                        ? parameters.changeableActor.surname
+                        : ''
+                        , {length: {min: 2, max: 16}, regex: /^[a-zA-Zа-яА-Я'][a-zA-Zа-яА-Я-' ]+[a-zA-Zа-яА-Я']?$/u});
 
     async function addNewActor(e){
         e.preventDefault();
-        create(actor)
+
+        let actor = {
+            name : name.value,
+            surname: surname.value
+        }
+
+        parameters.create(actor)
+    }
+
+    async function changeActor(e) {
+        e.preventDefault();
+
+        let actor = {
+            name: name.value,
+            surname: surname.value,
+            id: parameters.changeableActor.id
+        };
+
+        parameters.change(actor);
     }
 
     useEffect(() => {
-        setDisabled(false)
+        setDisabled(false);
 
-        for (let key in actor) {
-            if (!actor[key])
-            {
-                setDisabled(true);
-                break;
-            }
-        }
-
-        if(name.error || surname.error)
+        if(name.error || surname.error || name.value.length === 0)
             setDisabled(true);
-    }, [actor])
-
-    useEffect(() => {
-        setActor({...actor, name: name.value, surname: surname.value});
-    }, [name.value, surname.value])
+    }, [name.error, surname.error])
 
     return (
         <div className={cl.form}>
@@ -55,7 +67,12 @@ const ActorForm = function ({ create }) {
                 placeholder="Surname"
             />
 
-            <Button disabled={disabled} onClick={addNewActor}>Add</Button>
+            {parameters.type === "create" 
+                ?
+                <Button disabled={disabled} onClick={addNewActor}>Add</Button>
+                :
+                <Button disabled={disabled} onClick={changeActor}>Change</Button>
+            }
         </div>
     );
 };

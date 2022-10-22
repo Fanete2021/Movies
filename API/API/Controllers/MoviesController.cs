@@ -28,10 +28,11 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<Movie>> GetMoviesAsync([FromQuery] int[] ActorIds, [FromQuery] int[] GenreIds, 
-                                                        string title, int limit = 100, int page = 1)
+        public async Task<ActionResult<Movie>> GetMoviesAsync([FromQuery] int[] actorIds, [FromQuery] int[] genreIds, 
+                                                        string title, int limit = 100, int page = 1, 
+                                                        int minPremiereYear = 1895, int maxPremiereYear = 2030)
         {
-            var response = await _movieService.GetMoviesAsync(ActorIds, GenreIds, title, limit, page);
+            var response = await _movieService.GetMoviesAsync(actorIds, genreIds, title, limit, page, minPremiereYear, maxPremiereYear);
 
             if (response.StatusCode == Domain.Enum.StatusCode.OK)
             {
@@ -53,21 +54,10 @@ namespace API.Controllers
             return BadRequest(response.DescriptionError);
         }
 
-        [HttpPost("genres")]
-        public async Task<ActionResult<Movie>> AddGenreAsync(GenreMovie genreMovie)
+        [HttpPost("{id}")]
+        public async Task<ActionResult<Movie>> ChangeMovie(int id, MovieViewModel model)
         {
-            var response = await _movieService.AddGenreAsync(genreMovie);
-
-            if (response.StatusCode == Domain.Enum.StatusCode.OK)
-                return Ok(response.Data);
-
-            return BadRequest(response.DescriptionError);
-        }
-
-        [HttpPost("actors")]
-        public async Task<ActionResult<Movie>> AddActorAsync(ActorMovie actorMovie)
-        {
-            var response = await _movieService.AddActorAsync(actorMovie);
+            var response = await _movieService.EditAsync(id, model);
 
             if (response.StatusCode == Domain.Enum.StatusCode.OK)
                 return Ok(response.Data);

@@ -16,7 +16,7 @@ namespace API.Service.Implementations
             var credentials = new SigningCredentials(symmetricSecurityKey, SecurityAlgorithms.HmacSha256Signature);
             var header = new JwtHeader(credentials);
 
-            var payload = new JwtPayload(login, null, null, null, DateTime.UtcNow.AddHours(1));
+            var payload = new JwtPayload(login, null, null, null, DateTime.UtcNow.AddDays(1));
             var securityToken = new JwtSecurityToken(header, payload);
 
             return new JwtSecurityTokenHandler().WriteToken(securityToken);

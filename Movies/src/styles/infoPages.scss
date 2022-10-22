@@ -14,9 +14,19 @@ Button {
     height: 150px;
 }
 
-.infoBlock {
+.movies {
     width: 50vw;
     margin: 0 30vw;
+
+    @media (max-width: 1450px) {
+        margin: 0 35vw;
+        width: 60vw;
+    }
+}
+
+.actors {
+    width: 50vw;
+    margin: 0 25vw;
 }
 
 .filter {

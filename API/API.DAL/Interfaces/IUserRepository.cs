@@ -6,5 +6,6 @@ namespace API.DAL.Interfaces
     public interface IUserRepository: IBaseRepository<User>
     {
         Task<User> GetByLoginAsync(string login);
+        Task<User> CreateAsync(User user);
     }
 }

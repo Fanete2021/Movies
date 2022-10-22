@@ -1,0 +1,73 @@
+﻿.wrapper {
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.header {
+    background: url('../../../img/arrowUp-Black.png') left center no-repeat;
+    font-size: 20px;
+    cursor: pointer;
+    padding-left: 20px;
+}
+
+.header.active {
+    color: teal;
+    background: url('../../../img/arrowDown-Teal.png') left center no-repeat;
+}
+
+.values {
+    width: 100%;
+    display: flex;
+
+    .values__field {
+        height: 45px;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        font-size: 18px;
+        
+        &:first-child {
+            justify-content: right;
+        }
+    }
+    
+    .values__separator {
+        width: 130px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 30px;        
+    } 
+}
+
+.slider {
+    height: 5px;
+    border-radius: 5px;
+    background: #ddd;
+    position: relative;
+
+    .slider__progress {
+        height: 5px;
+        left: 0;
+        right: 0;
+        position: absolute;
+        border-radius: 5px;
+        background: #17A2B8;
+    }
+}
+
+.rangeInp {
+    position: relative;
+
+    input {
+        position: absolute;
+        top: -15px;
+        height: 5px;
+        width: 100%;
+        background: none;
+        pointer-events: none;
+        -webkit-appearance: none;
+    }
+}

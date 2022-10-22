@@ -11,13 +11,21 @@ $repeatedPassword: '../img/key2.png';
     min-height: 15vw;
     display: flex;
     flex-direction: column;
+
+    @media (max-width: 1300px) {
+        min-width: 40vw;
+        margin: 100px 30vw 0;
+        min-height: 22.5vw;
+    }
 }
 
 .login__choice {
-    margin: 20px 25% 5px;
+    margin: 20px auto 5px;
+    justify-content: center;
+    align-items: center;
 
     span {
-        margin: 0 20px;
+        margin: 0 10px;
         font-size: 20px;
         cursor: pointer;
     }
@@ -26,6 +34,11 @@ $repeatedPassword: '../img/key2.png';
         color: teal;
         font-weight: 700;
         cursor: default;
+    }
+
+    .separator {
+        border: .5px solid black;
+        background-color: black;
     }
 }
 

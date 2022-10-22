@@ -1,5 +1,5 @@
 ﻿using API.Domain.Entity;
-using API.Domain.Responce;
+using API.Domain.Response;
 using API.Domain.ViewModels;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -8,9 +8,9 @@ namespace API.Service.Interfaces
 {
     public interface IActorService
     {
-        Task<BaseResponce<IEnumerable<Actor>>> GetActorsAsync(string name, int[] BannedIds, int limit, int page);
-        Task<BaseResponce<Actor>> CreateAsync(ActorViewModel model);
-        Task<BaseResponce<bool>> DeleteAsync(int id);
-        Task<BaseResponce<Actor>> EditAsync(int id, ActorViewModel model);
+        Task<BaseResponse<IEnumerable<Actor>>> GetActorsAsync(int[] bannedIds, string name, int limit, int page);
+        Task<BaseResponse<Actor>> CreateAsync(ActorViewModel model);
+        Task<BaseResponse<bool>> DeleteAsync(int id);
+        Task<BaseResponse<bool>> EditAsync(int id, ActorViewModel model);
     }
 }

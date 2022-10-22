@@ -1,5 +1,5 @@
 ﻿using API.Domain.Entity;
-using API.Domain.Responce;
+using API.Domain.Response;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -7,6 +7,6 @@ namespace API.Service.Interfaces
 {
     public interface IGenreService
     {
-        Task<BaseResponce<IEnumerable<Genre>>> GetGenresAsync();
+        Task<BaseResponse<IEnumerable<Genre>>> GetGenresAsync();
     }
 }

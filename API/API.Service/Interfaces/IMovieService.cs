@@ -1,5 +1,5 @@
 ﻿using API.Domain.Entity;
-using API.Domain.Responce;
+using API.Domain.Response;
 using API.Domain.ViewModels;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -8,12 +8,11 @@ namespace API.Service.Interfaces
 {
     public interface IMovieService
     {
-        Task<BaseResponce<IEnumerable<Movie>>> GetMoviesAsync(int[] ActorIds, int[] GenreIds, string title, int limit, int page);
-        Task<BaseResponce<Movie>> GetMovieAsync(int id);
-        Task<BaseResponce<Movie>> CreateAsync(MovieViewModel model);
-        Task<BaseResponce<GenreMovie>> AddGenreAsync(GenreMovie genreMovie);
-        Task<BaseResponce<ActorMovie>> AddActorAsync(ActorMovie actorMovie);
-        Task<BaseResponce<bool>> DeleteAsync(int id);
-        Task<BaseResponce<Movie>> EditAsync(int id, MovieViewModel model);
+        Task<BaseResponse<IEnumerable<Movie>>> GetMoviesAsync(int[] actorIds, int[] genreIds, string title, 
+                                                              int limit, int page, int minPremiereYear, int maxPremiereYear);
+        Task<BaseResponse<Movie>> GetMovieAsync(int id);
+        Task<BaseResponse<Movie>> CreateAsync(MovieViewModel model);
+        Task<BaseResponse<bool>> DeleteAsync(int id);
+        Task<BaseResponse<bool>> EditAsync(int id, MovieViewModel model);
     }
 }

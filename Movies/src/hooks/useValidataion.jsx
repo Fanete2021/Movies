@@ -13,10 +13,8 @@ function useValidation(value, validations) {
                         setError(`The field must contain from ${validations[validation].min} to ${validations[validation].max} characters`);
                     break;
                 case 'isEmpty':
-                    if (!value){
+                    if (!value)
                         setError("The field cannot be empty");
-                        console.log(value)
-                    }
                     break;
                 case 'regex':
                     if (value && !validations[validation].test(value))

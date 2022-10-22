@@ -9,17 +9,17 @@ namespace API.Controllers
     [ApiController, Route("actors")]
     public class ActorsController : ControllerBase
     {
-        private readonly IActorService _actorsService;
+        private readonly IActorService _actorService;
 
         public ActorsController(IActorService actorsService)
         {
-            _actorsService = actorsService;
+            _actorService = actorsService;
         }
 
         [HttpGet]
-        public async Task<ActionResult<Actor>> GetActorsAsync(string name, [FromQuery] int[] BannedIds, int limit = 100, int page = 1)
+        public async Task<ActionResult<Actor>> GetActorsAsync([FromQuery] int[] bannedIds, string name, int limit = 100, int page = 1)
         {
-            var response = await _actorsService.GetActorsAsync(name, BannedIds, limit, page);
+            var response = await _actorService.GetActorsAsync(bannedIds, name, limit, page);
 
             if (response.StatusCode == Domain.Enum.StatusCode.OK)
             {
@@ -33,7 +33,18 @@ namespace API.Controllers
         [HttpPost]
         public async Task<ActionResult<Actor>> CreateActorAsync(ActorViewModel model)
         {
-            var response = await _actorsService.CreateAsync(model);
+            var response = await _actorService.CreateAsync(model);
+
+            if (response.StatusCode == Domain.Enum.StatusCode.OK)
+                return Ok(response.Data);
+
+            return BadRequest(response.DescriptionError);
+        }
+
+        [HttpPost("{id}")]
+        public async Task<ActionResult<Movie>> ChangeActor(int id, ActorViewModel model)
+        {
+            var response = await _actorService.EditAsync(id, model);
 
             if (response.StatusCode == Domain.Enum.StatusCode.OK)
                 return Ok(response.Data);
@@ -44,7 +55,7 @@ namespace API.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<Actor>> DeleteActorAsync(int id)
         {
-            var response = await _actorsService.DeleteAsync(id);
+            var response = await _actorService.DeleteAsync(id);
 
             if (response.StatusCode == Domain.Enum.StatusCode.OK)
                 return Ok(response.Data);

@@ -1,27 +1,22 @@
 ﻿import React from 'react';
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import cl from './list.module.scss';
 
 const List = function ( {title, entities, countEntities, isEntitiesLoading, getItem }) {
-    if (!entities.length) {
-        return (
-            <div className={cl.content}>
-                <h1>
-                    The list is empty
-                </h1>
-            </div>
-        )
-    }
-
     return (
-        <div className={cl.content}>
-            {!isEntitiesLoading &&
-                <h1>
-                    {title} ({countEntities})
-                </h1>
-            }
-            {entities.map(entity => 
-                getItem(entity, entity.id)
-            )}
+        <div className={cl.list}>
+                {!isEntitiesLoading &&
+                    <h1>
+                        {title} ({countEntities})
+                    </h1>
+                }
+                <TransitionGroup>
+                    {entities.map(entity =>
+                        <CSSTransition key={entity.id} timeout={500} classNames="item">
+                            {getItem(entity, entity.id)}
+                        </CSSTransition> 
+                    )}
+                </TransitionGroup>
         </div>
     );
 };

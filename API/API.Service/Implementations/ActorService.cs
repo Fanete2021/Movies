@@ -1,6 +1,6 @@
 ﻿using API.DAL.Interfaces;
 using API.Domain.Entity;
-using API.Domain.Responce;
+using API.Domain.Response;
 using API.Domain.ViewModels;
 using API.Service.Interfaces;
 using System;
@@ -19,16 +19,16 @@ namespace API.Service.Implementations
             this.actorRepository = actorRepository;
         }
 
-        public async Task<BaseResponce<IEnumerable<Actor>>> GetActorsAsync(string name, int[] BannedIds, int limit, int page)
+        public async Task<BaseResponse<IEnumerable<Actor>>> GetActorsAsync(int[] bannedIds, string name, int limit, int page)
         {
-            var baseResponse = new BaseResponce<IEnumerable<Actor>>();
+            var baseResponse = new BaseResponse<IEnumerable<Actor>>();
 
             try
             {
                 if (name == null)
                     name = "";
 
-                var actors = await actorRepository.GetActorsAsync(name, BannedIds);
+                var actors = await actorRepository.GetActorsAsync(bannedIds, name);
 
                 if (actors == null)
                 {
@@ -47,7 +47,7 @@ namespace API.Service.Implementations
             }
             catch (Exception ex)
             {
-                return new BaseResponce<IEnumerable<Actor>>()
+                return new BaseResponse<IEnumerable<Actor>>()
                 {
                     DescriptionError = $"[ActorService.GetActorsAsync]: {ex.Message}",
                     StatusCode = Domain.Enum.StatusCode.InternalServerError
@@ -55,9 +55,9 @@ namespace API.Service.Implementations
             }
         }
 
-        public async Task<BaseResponce<Actor>> CreateAsync(ActorViewModel model)
+        public async Task<BaseResponse<Actor>> CreateAsync(ActorViewModel model)
         {
-            var baseResponse = new BaseResponce<Actor>();
+            var baseResponse = new BaseResponse<Actor>();
 
             try
             {
@@ -74,7 +74,7 @@ namespace API.Service.Implementations
             }
             catch (Exception ex)
             {
-                return new BaseResponce<Actor>()
+                return new BaseResponse<Actor>()
                 {
                     DescriptionError = $"[ActorService.CreateAsync]: {ex.Message}",
                     StatusCode = Domain.Enum.StatusCode.DataWithErrors
@@ -82,9 +82,9 @@ namespace API.Service.Implementations
             }
         }
 
-        public async Task<BaseResponce<bool>> DeleteAsync(int id)
+        public async Task<BaseResponse<bool>> DeleteAsync(int id)
         {
-            var baseResponse = new BaseResponce<bool>();
+            var baseResponse = new BaseResponse<bool>();
 
             try
             {
@@ -107,7 +107,7 @@ namespace API.Service.Implementations
             }
             catch (Exception ex)
             {
-                return new BaseResponce<bool>()
+                return new BaseResponse<bool>()
                 {
                     Data = false,
                     DescriptionError = $"[ActorService.DeleteAsync]: {ex.Message}",
@@ -116,32 +116,25 @@ namespace API.Service.Implementations
             }
         }
 
-        public async Task<BaseResponce<Actor>> EditAsync(int id, ActorViewModel model)
+        public async Task<BaseResponse<bool>> EditAsync(int id, ActorViewModel model)
         {
-            var baseResponse = new BaseResponce<Actor>();
+            var baseResponse = new BaseResponse<bool>();
 
             try
             {
-                var actor = await actorRepository.GetActorAsync(id);
+                var response = await actorRepository.UpdateAsync(id, model);
 
-                if (actor == null)
-                {
-                    baseResponse.DescriptionError = "Actor not found";
+                baseResponse.Data = response;
+                if (response)
+                    baseResponse.StatusCode = Domain.Enum.StatusCode.OK;
+                else
                     baseResponse.StatusCode = Domain.Enum.StatusCode.ActorNotFound;
-
-                    return baseResponse;
-                }
-
-                actor.Name = model.Name;
-                actor.Surname = model.Surname;
-
-                await actorRepository.UpdateAsync(actor);
 
                 return baseResponse;
             }
             catch (Exception ex)
             {
-                return new BaseResponce<Actor>()
+                return new BaseResponse<bool>()
                 {
                     DescriptionError = $"[ActorService.EditAsync]: {ex.Message}",
                     StatusCode = Domain.Enum.StatusCode.DataWithErrors

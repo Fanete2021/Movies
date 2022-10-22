@@ -16,6 +16,11 @@
         align-content: center;
         font-weight: 900;
         font-size: 24px;
+
+        @media (max-width:700px)
+        {
+            font-size: 19px;
+        }
     }
 
     .movie__premiere {
@@ -27,6 +32,10 @@
         min-height: 10px;
         word-wrap: break-word;
         margin: 6px 0;
+
+        @media (max-width: 800px) {
+            font-size: 13px;
+        }
     }
 
     .movie__genres {
@@ -34,21 +43,40 @@
         text-transform: lowercase;
         font-size: 14px;
         margin-top: -3px;
+        word-wrap: break-word;
+        min-height: 10px;
 
         :not(:first-child) {
             padding-left: 5px;
         }
     }
 
-    .btn {
-        text-align: right;
+    .movie__cast {
+        @media (max-width: 800px) {
+            font-size: 14px;
+        }
+    }
 
-        Button {
+    .btns {
+        display: flex;
+        justify-content: right;
+
+        .btns__delete Button {
             color: red;
             border: 1px solid red;
 
             &:enabled:hover {
                 background-color: rgba(255, 0, 0, 0.1);
+            }
+        }
+
+        .btns__edit Button {
+            color: rgb(220, 220, 0);
+            border: 1px solid rgb(175, 175, 0);
+            margin-right: 5px;
+
+            &:enabled:hover {
+                background-color: rgba(251, 255, 0, 0.1);
             }
         }
     }

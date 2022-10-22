@@ -20,15 +20,26 @@
         box-shadow: 0 0 0 1px rgba(0,128,128,1);
     }
 
-    .btn {
-        text-align: right;
+    .btns {
+        display: flex;
+        justify-content: right;
 
-        Button {
+        .btns__delete Button {
             color: red;
             border: 1px solid red;
 
             &:enabled:hover {
                 background-color: rgba(255, 0, 0, 0.1);
+            }
+        }
+
+        .btns__edit Button {
+            color: rgb(220, 220, 0);
+            border: 1px solid rgb(175, 175, 0);
+            margin-right: 5px;
+
+            &:enabled:hover {
+                background-color: rgba(251, 255, 0, 0.1);
             }
         }
     }

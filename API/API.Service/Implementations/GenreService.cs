@@ -1,6 +1,6 @@
 ﻿using API.DAL.Interfaces;
 using API.Domain.Entity;
-using API.Domain.Responce;
+using API.Domain.Response;
 using API.Service.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -17,9 +17,9 @@ namespace API.Service.Implementations
             this.genreRepository = genreRepository;
         }
 
-        public async Task<BaseResponce<IEnumerable<Genre>>> GetGenresAsync()
+        public async Task<BaseResponse<IEnumerable<Genre>>> GetGenresAsync()
         {
-            var baseResponse = new BaseResponce<IEnumerable<Genre>>();
+            var baseResponse = new BaseResponse<IEnumerable<Genre>>();
             try
             {
                 var genres = await genreRepository.GetGenresAsync();
@@ -35,7 +35,7 @@ namespace API.Service.Implementations
             }
             catch(Exception ex)
             {
-                return new BaseResponce<IEnumerable<Genre>>()
+                return new BaseResponse<IEnumerable<Genre>>()
                 {
                     DescriptionError = $"[GenreService.GetGenresAsync]: {ex.Message}",
                     StatusCode = Domain.Enum.StatusCode.InternalServerError

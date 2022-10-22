@@ -96,6 +96,16 @@ $dArrowSideTeal: '../../../img/dArrowSide-Teal.png';
         color: teal;
         background-color: rgba(0, 128, 128, 0.1);
     }
+
+    @media (max-width: 800px)
+    {
+        font-size: 16px;
+    }
+
+    @media (max-width: 1300px)
+    {
+        width: 11.1%;
+    }
 }
 
 .navigation__currentPage {

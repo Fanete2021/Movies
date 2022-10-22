@@ -10,11 +10,14 @@
 
 .genres__wrap {
     display: inline-flex;
-    align-items: center; 
     flex-basis: 33.33333%;
     margin-top: 5px;
     user-select: none;
     text-transform: lowercase;
+
+    @media (max-width: 1350px) {
+        flex-basis: 50%;
+    }
 
     .genres__label {
         cursor: pointer;
@@ -44,6 +47,11 @@
             background-repeat: no-repeat;
             background-position: center center;
             background-size: 50% 50%;
+
+            @media (max-width: 800px) {
+                width: 0.5em;
+                height: 0.5em;
+            }
         }
 
         &:checked + .genres__label::before {
